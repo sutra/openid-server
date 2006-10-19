@@ -1,0 +1,106 @@
+* {
+	font-size: 14px;
+	font-family: Tahoma;
+	line-height: 150%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+	background-color: yellow;
+}
+
+body {
+	font-family: sans-serif;
+	border: 10px solid #cdcdcd;
+	margin: 0;
+	padding: 15px 50px 30px 50px;
+	background: white;
+	color: #000;
+}
+
+input.sexy {
+	background: url(login-bg.gif) no-repeat;
+	background-color: #fff;
+	background-position: 0 50%;
+	color: #000;
+	padding-left: 18px;
+	border: 1px #A5ACB2 solid;
+}
+
+input.button {
+	background: rgb(255, 98, 0) none repeat scroll 0%;
+	-moz-background-clip: -moz-initial;
+	-moz-background-origin: -moz-initial;
+	-moz-background-inline-policy: -moz-initial;
+	color: rgb(255, 255, 255);
+}
+
+input.common {
+	background-color: #fff;
+	background-position: 0 50%;
+	color: #000;
+	border: 1px #A5ACB2 solid;
+}
+
+a {
+	color: #ff5600;
+}
+
+p {
+	margin-top: 0;
+}
+
+pre {
+	background: #eee;
+	border: 1px solid #777;
+	padding: 7px;
+}
+
+.error {
+	color: red;
+}
+
+#header {
+	
+}
+
+#footer {
+	text-align: center;
+	border-top: 1px solid #AAA;
+	margin-top: 50px;
+	padding: 10px;
+}
+
+#navbar {
+	text-align: center;
+	line-height: 20px;
+	padding-left: 4px;
+	padding-right: 4px;
+	border-bottom: 1px solid #AAA;
+}
+
+#navbar li {
+	display: inline;
+}
+
+#navbar a {
+	font-size: 16px;
+	font-weight: bold;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+#navbar a:hover {
+	text-decoration: none;
+	background-color: yellow;
+	padding-top: 5px;
+	border-top: 3px #006699 solid;
+}
+
+#description {
+	margin: 10px 0px 10px 0px;
+}

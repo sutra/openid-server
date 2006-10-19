@@ -1,0 +1,74 @@
+/**
+ * Created on 2006-10-16 上午12:17:52
+ */
+package cn.net.openid.dao.hibernate;
+
+import java.util.List;
+
+import cn.net.openid.Credential;
+import cn.net.openid.User;
+import cn.net.openid.dao.UserDao;
+
+/**
+ * @author Shutra
+ * 
+ */
+public class HibernateUserDao extends BaseHibernateEntityDao<User> implements
+		UserDao {
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see cn.net.openid.dao.UserDao#getUser(java.lang.String)
+	 */
+	public User getUser(String id) {
+		return this.get(id);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see cn.net.openid.dao.UserDao#getUserByUsername(java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public User getUserByUsername(String username) {
+		List<User> users = getHibernateTemplate().find(
+				"from User where username = ?", username);
+		if (users.isEmpty()) {
+			return null;
+		} else {
+			return users.get(0);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see cn.net.openid.dao.UserDao#saveUser(cn.net.openid.User)
+	 */
+	public String saveUser(User user) {
+		return (String) this.getHibernateTemplate().save(user);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see cn.net.openid.dao.UserDao#saveCredential(cn.net.openid.Credential)
+	 */
+	public String saveCredential(Credential credential) {
+		return (String) this.getHibernateTemplate().save(credential);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see cn.net.openid.dao.UserDao#getCredentials(java.lang.String)
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Credential> getCredentials(String userId) {
+		List<Credential> credentials = getHibernateTemplate().find(
+				"from Credential where user.id = ?", userId);
+		return credentials;
+	}
+
+}
