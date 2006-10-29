@@ -1,0 +1,81 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+		  "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<!-- 
+		<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+		<list>
+		<value>WEB-INF/openid.properties</value>
+		</list>
+		</property>
+		</bean>
+	-->
+
+	<bean id="baseTransactionProxy"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+		abstract="true">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="insert*">PROPAGATION_REQUIRED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED</prop>
+				<prop key="*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="daoFacade" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="cn.net.openid.dao.DaoFacadeImpl">
+				<property name="openidUrlPattern"
+					value="http://localhost/openid-server/member/{username}">
+				</property>
+				<property name="userDao" ref="userDao" />
+				<property name="credentialDao" ref="credentialDao" />
+				<property name="credentialHandlerDao"
+					ref="credentialHandlerDao" />
+			</bean>
+		</property>
+		<!-- Uncomment the following in order to enable mail sending aspect -->
+		<!-- 
+			<property name="postInterceptors">
+			<list>
+			<ref bean="emailAdvisor" />
+			</list>
+			</property>
+		-->
+	</bean>
+	<bean id="provider" class="cn.net.openid.impl.ProviderImpl">
+		<property name="daoFacade" ref="daoFacade"></property>
+	</bean>
+
+	<bean id="associateService"
+		class="cn.net.openid.modes.AssociateService" />
+	<bean id="checkAuthenticationService"
+		class="cn.net.openid.modes.CheckAuthenticationService" />
+	<bean id="checkIdImmediateService"
+		class="cn.net.openid.modes.CheckIdImmediateService" />
+	<bean id="checkIdSetupService"
+		class="cn.net.openid.modes.CheckIdSetupService">
+		<property name="provider" ref="provider" />
+	</bean>
+
+	<bean id="modes" class="cn.net.openid.Modes">
+		<property name="getModes">
+			<map>
+				<entry key="checkid_immediate"
+					value-ref="checkIdImmediateService" />
+				<entry key="checkid_setup"
+					value-ref="checkIdSetupService" />
+			</map>
+		</property>
+		<property name="postModes">
+			<map>
+				<entry key="associate" value-ref="associateService" />
+				<entry key="check_authentication"
+					value-ref="checkAuthenticationService" />
+			</map>
+		</property>
+	</bean>
+</beans>
