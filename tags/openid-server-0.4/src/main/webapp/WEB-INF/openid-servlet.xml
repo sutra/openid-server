@@ -1,0 +1,212 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+		  "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+
+	<!-- The home page controller before and after logged in. -->
+	<bean id="homeController"
+		class="cn.net.openid.web.HomeController">
+	</bean>
+
+	<!-- Register a user page controller. -->
+	<bean id="registerController"
+		class="cn.net.openid.web.RegisterController">
+		<property name="commandClass"
+			value="cn.net.openid.web.RegisterForm" />
+		<property name="formView" value="register" />
+		<property name="successView" value="register-success" />
+		<property name="validator" ref="registerFormValidator" />
+		<property name="daoFacade" ref="daoFacade" />
+	</bean>
+
+	<!-- Simple login page controller. -->
+	<bean id="loginController"
+		class="cn.net.openid.web.LoginController">
+		<property name="commandClass"
+			value="cn.net.openid.web.LoginForm" />
+		<property name="formView" value="login" />
+		<property name="successView" value="login-success" />
+		<property name="daoFacade" ref="daoFacade" />
+		<property name="provider" ref="provider" />
+	</bean>
+
+	<!-- Login handlers list controller. -->
+	<bean id="loginHandlersController"
+		class="cn.net.openid.web.LoginHandlersController">
+		<property name="commandClass"
+			value="cn.net.openid.web.LoginHandlersForm" />
+		<property name="formView" value="login-handlers" />
+		<property name="successView" value="login-handlers" />
+		<property name="daoFacade" ref="daoFacade" />
+		<property name="provider" ref="provider" />
+	</bean>
+
+	<!-- Logout. -->
+	<bean id="logoutController"
+		class="cn.net.openid.web.LogoutController">
+	</bean>
+
+	<!-- Profile edit. -->
+	<bean id="profileController"
+		class="cn.net.openid.web.ProfileController">
+		<property name="commandName" value="profile" />
+		<property name="commandClass" value="cn.net.openid.User" />
+		<property name="formView" value="profile" />
+		<property name="successView" value="profile-success" />
+		<property name="validator" ref="userValidator" />
+		<property name="daoFacade" ref="daoFacade" />
+		<property name="messageSource" ref="messageSource" />
+		<property name="localeResolver" ref="localeResolver" />
+	</bean>
+
+	<!-- Credentials list controller. -->
+	<bean id="credentialsController"
+		class="cn.net.openid.web.CredentialsController">
+		<property name="daoFacade" ref="daoFacade" />
+	</bean>
+
+	<!-- Edit credential. -->
+	<bean id="editCredentialController"
+		class="cn.net.openid.web.EditCredentialController">
+		<property name="daoFacade" ref="daoFacade" />
+	</bean>
+
+	<!-- Edit the simple credential: password. -->
+	<bean id="editPasswordController"
+		class="cn.net.openid.web.EditPasswordController">
+		<property name="commandClass"
+			value="cn.net.openid.web.EditPasswordForm" />
+		<property name="commandName" value="editPasswordForm" />
+		<property name="formView" value="edit-password" />
+		<property name="successView" value="edit-password-success" />
+		<property name="daoFacade" ref="daoFacade" />
+	</bean>
+
+	<!-- Delete credential. -->
+	<bean id="deleteCredentialController"
+		class="cn.net.openid.web.DeleteCredentialController">
+		<property name="commandName" value="credential" />
+		<property name="commandClass" value="cn.net.openid.Credential" />
+		<property name="formView" value="delete-credential" />
+		<property name="successView" value="delete-credential-success" />
+		<property name="daoFacade" ref="daoFacade" />
+	</bean>
+
+	<!-- 
+		<bean id="sitesController" class="cn.net.openid.web.SitesController">
+		</bean>
+	-->
+
+	<bean id="humanLanguageSelectionController"
+		class="cn.net.openid.web.HumanLanguageSelectionController">
+		<property name="formView" value="human-language-selection" />
+		<property name="localeResolver" ref="localeResolver" />
+	</bean>
+
+	<!-- The url mappings that can be visited anonymously. -->
+	<bean id="handlerMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref local="localeChangeInterceptor" />
+			</list>
+		</property>
+		<property name="urlMap">
+			<map>
+				<entry key="/index.html">
+					<ref local="homeController" />
+				</entry>
+				<entry key="/home">
+					<ref local="homeController" />
+				</entry>
+				<entry key="/register">
+					<ref local="registerController" />
+				</entry>
+				<entry key="/login">
+					<ref local="loginController" />
+				</entry>
+				<entry key="/index.login">
+					<ref local="loginHandlersController" />
+				</entry>
+				<entry key="/hl">
+					<ref local="humanLanguageSelectionController" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<!-- The interceptor to check user session. -->
+	<bean id="userLoggedInInterceptor"
+		class="cn.net.openid.web.UserLoggedInInterceptor">
+		<property name="loginPath" value="/login" />
+	</bean>
+	<bean id="secureHandlerMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref local="userLoggedInInterceptor" />
+				<ref local="localChangeInterceptor" />
+			</list>
+		</property>
+		<property name="urlMap">
+			<map>
+				<entry key="/logout">
+					<ref local="logoutController" />
+				</entry>
+				<entry key="/profile">
+					<ref local="profileController" />
+				</entry>
+				<entry key="/credentials">
+					<ref local="credentialsController" />
+				</entry>
+				<entry key="/edit.credential">
+					<ref local="editCredentialController" />
+				</entry>
+				<entry key="/password.credential">
+					<ref local="editPasswordController" />
+				</entry>
+				<entry key="/delete.credential">
+					<ref local="deleteCredentialController" />
+				</entry>
+				<!-- 
+					<entry key="/sites">
+					<ref local="sitesController"/>
+					</entry>
+				-->
+			</map>
+		</property>
+	</bean>
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>cn.net.openid.web.messages</value>
+				<value>cn.net.openid.web.credentialHandler</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="velocityConfigurer"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath"
+			value="/WEB-INF/view/velocity/" />
+		<property name="configLocation">
+			<value>/WEB-INF/velocity.properties</value>
+		</property>
+	</bean>
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="prefix" value="" />
+		<property name="suffix" value=".vm" />
+		<property name="contentType" value="text/html; charset=UTF-8" />
+		<property name="exposeSpringMacroHelpers" value="true" />
+		<property name="exposeSessionAttributes" value="true" />
+		<property name="toolboxConfigLocation">
+			<value>/WEB-INF/toolbox.xml</value>
+		</property>
+	</bean>
+	<bean id="localeChangeInterceptor"
+		class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+		<property name="paramName" value="hl" />
+	</bean>
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+</beans>
