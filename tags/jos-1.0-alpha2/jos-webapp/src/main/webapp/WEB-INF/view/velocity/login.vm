@@ -1,0 +1,63 @@
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("login")</title>
+	</head>
+	<body>
+	<div>
+		#parse("header.vm")
+		<fieldset>
+			<legend>#springMessage("login")</legend>
+			<form action="login?token=$!token" method="post">
+
+				#if($token && $token != "")
+					You must sign in to authenticate to $approvingRequest.authRequest.realm as $approvingRequest.authRequest.claimed.
+				#end
+
+				<table>
+					#springBind("command.username")
+					<tr>
+						<td class="label">
+							<label for="username">OpenID：</label>
+						</td>
+						<td>
+							${josConfiguration.identifierPrefix}
+							#springFormInput("command.username" 'class="sexy" size="16"')
+							${josConfiguration.identifierSuffix}
+							#springShowErrors("" "error")
+						</td>
+					</tr>
+					#springBind("command.password")
+					<tr>
+						<td class="label">
+							<label for="password">#springMessage("label.password")</label>
+						</td>
+						<td>
+							#springFormPasswordInput("command.password" 'class="common" size="33"')
+							#springShowErrors("" "error")
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td>
+							<input type="submit" value="#springMessage('login')" class="button" />
+							##<a href="index.login" title="#springMessage('login.other')">#springMessage("login.other")</a>
+						</td>
+					</tr>
+				</table>
+			</form>
+			<script type="text/javascript">
+				<!--
+				var objUsername = document.getElementById("username");
+				if (objUsername.value === "") {
+					objUsername.focus();
+				} else {
+					document.getElementById("password").focus();
+				}
+				//-->
+			</script>
+		</fieldset>
+		#parse("footer.vm")
+	</div>
+</body>
+</html>

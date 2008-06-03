@@ -1,0 +1,246 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+		  "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<bean id="abstractJosController"
+		class="cn.net.openid.jos.web.AbstractJosController" abstract="true">
+		<property name="josService" ref="josService" />
+		<property name="serverManager" ref="serverManager" />
+	</bean>
+
+	<bean id="abstractJosSimpleFormController"
+		class="cn.net.openid.jos.web.AbstractJosSimpleFormController"
+		abstract="true">
+		<property name="josService" ref="josService" />
+		<property name="serverManager" ref="serverManager" />
+	</bean>
+
+	<bean id="serverController"
+		class="cn.net.openid.jos.web.controller.ServerController"
+		parent="abstractJosController">
+	</bean>
+	<bean id="approvingController"
+		class="cn.net.openid.jos.web.controller.ApprovingController"
+		parent="abstractJosSimpleFormController">
+		<property name="commandClass"
+			value="cn.net.openid.jos.web.form.ApprovingForm" />
+	</bean>
+	<!-- The home page controller before and after logged in. -->
+	<bean id="homeController"
+		class="cn.net.openid.jos.web.controller.HomeController"
+		parent="abstractJosController">
+	</bean>
+
+	<!-- Register a user page controller. -->
+	<bean id="registerController"
+		class="cn.net.openid.jos.web.controller.RegisterController"
+		parent="abstractJosSimpleFormController">
+		<property name="commandClass"
+			value="cn.net.openid.jos.web.form.RegisterForm" />
+		<property name="formView" value="register" />
+		<property name="successView" value="register-success" />
+		<property name="validator" ref="registerFormValidator" />
+	</bean>
+
+	<!-- Simple login page controller. -->
+	<bean id="loginController"
+		class="cn.net.openid.jos.web.controller.LoginController"
+		parent="abstractJosSimpleFormController">
+		<property name="commandClass"
+			value="cn.net.openid.jos.web.form.LoginForm" />
+		<property name="formView" value="login" />
+		<property name="successView" value="login-success" />
+	</bean>
+
+	<!-- Logout. -->
+	<bean id="logoutController"
+		class="cn.net.openid.jos.web.controller.LogoutController">
+	</bean>
+
+	<!-- Email. -->
+	<bean id="emailController"
+		class="cn.net.openid.jos.web.controller.EmailController"
+		parent="abstractJosSimpleFormController">
+		<property name="commandName" value="email" />
+		<property name="commandClass"
+			value="cn.net.openid.jos.domain.Email" />
+		<property name="formView" value="email" />
+		<property name="successView" value="email-success" />
+	</bean>
+	<bean id="deleteEmailController"
+		class="cn.net.openid.jos.web.controller.DeleteEmailController"
+		parent="abstractJosController">
+	</bean>
+	<bean id="confirmEmailController"
+		class="cn.net.openid.jos.web.controller.ConfirmEmailController"
+		parent="abstractJosSimpleFormController">
+		<property name="commandClass"
+			value="cn.net.openid.jos.web.form.ConfirmEmailForm" />
+		<property name="formView" value="confirm-email" />
+		<property name="successView" value="confirm-email-success" />
+	</bean>
+
+	<!-- Edit the password. -->
+	<bean id="editPasswordController"
+		class="cn.net.openid.jos.web.controller.EditPasswordController"
+		parent="abstractJosSimpleFormController">
+		<property name="commandClass"
+			value="cn.net.openid.jos.web.form.EditPasswordForm" />
+		<property name="commandName" value="editPasswordForm" />
+		<property name="formView" value="edit-password" />
+		<property name="successView" value="edit-password-success" />
+	</bean>
+
+	<!-- Persona. -->
+	<bean id="personasController"
+		class="cn.net.openid.jos.web.controller.PersonasController"
+		parent="abstractJosController">
+	</bean>
+	<bean id="personaController"
+		class="cn.net.openid.jos.web.controller.PersonaController"
+		parent="abstractJosSimpleFormController">
+		<property name="commandName" value="persona" />
+		<property name="commandClass"
+			value="cn.net.openid.jos.domain.Persona" />
+		<property name="formView" value="persona" />
+		<property name="successView" value="persona-success" />
+		<property name="validator" ref="personaValidator" />
+		<property name="messageSource" ref="messageSource" />
+		<property name="localeResolver" ref="localeResolver" />
+	</bean>
+
+	<!-- Attribute -->
+	<bean id="attributesController"
+		class="cn.net.openid.jos.web.controller.AttributesController"
+		parent="abstractJosController">
+	</bean>
+
+	<bean id="editAttributeController"
+		class="cn.net.openid.jos.web.controller.EditAttributeController"
+		parent="abstractJosSimpleFormController">
+		<property name="commandName" value="attribute" />
+		<property name="commandClass"
+			value="cn.net.openid.jos.domain.Attribute" />
+		<property name="formView" value="edit-attribute" />
+		<property name="successView" value="edit-attribute-success" />
+	</bean>
+
+	<bean id="removeAttributeController"
+		class="cn.net.openid.jos.web.controller.RemoveAttributeController"
+		parent="abstractJosController">
+	</bean>
+
+	<bean id="attributeValueController"
+		class="cn.net.openid.jos.web.controller.AttributeValueController"
+		parent="abstractJosSimpleFormController">
+		<property name="formView" value="attribute-value" />
+		<property name="successView" value="attribute-value-success" />
+	</bean>
+
+	<bean id="sitesController"
+		class="cn.net.openid.jos.web.controller.SitesController"
+		parent="abstractJosSimpleFormController">
+		<property name="commandClass"
+			value="cn.net.openid.jos.web.form.SitesForm" />
+		<property name="formView" value="sites" />
+		<property name="successView" value="sites" />
+	</bean>
+
+	<bean id="humanLanguageSelectionController"
+		class="cn.net.openid.jos.web.controller.HumanLanguageSelectionController">
+		<property name="formView" value="human-language-selection" />
+		<property name="localeResolver" ref="localeResolver" />
+	</bean>
+
+	<!-- The url mappings that can be visited anonymously. -->
+	<bean id="handlerMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref local="localeChangeInterceptor" />
+			</list>
+		</property>
+		<property name="urlMap">
+			<map>
+				<entry key="/index.html" value-ref="homeController" />
+				<entry key="/home" value-ref="homeController" />
+				<entry key="/register" value-ref="registerController" />
+				<entry key="/login" value-ref="loginController" />
+				<entry key="/email-confirm"
+					value-ref="confirmEmailController" />
+				<entry key="/hl"
+					value-ref="humanLanguageSelectionController" />
+				<entry key="/server" value-ref="serverController" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- The interceptor to check user session. -->
+	<bean id="userLoggedInInterceptor"
+		class="cn.net.openid.jos.web.UserLoggedInInterceptor">
+		<property name="loginPath" value="/login" />
+	</bean>
+	<bean id="secureHandlerMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref local="userLoggedInInterceptor" />
+				<ref local="localeChangeInterceptor" />
+			</list>
+		</property>
+		<property name="urlMap">
+			<map>
+				<entry key="/approving" value-ref="approvingController" />
+				<entry key="/logout" value-ref="logoutController" />
+				<entry key="/email" value-ref="emailController" />
+				<entry key="/email-remove"
+					value-ref="deleteEmailController" />
+				<entry key="/password"
+					value-ref="editPasswordController" />
+				<entry key="/personas" value-ref="personasController" />
+				<entry key="/persona" value-ref="personaController" />
+				<entry key="/attributes"
+					value-ref="attributesController" />
+				<entry key="/edit-attribute"
+					value-ref="editAttributeController" />
+				<entry key="/remove-attribute"
+					value-ref="removeAttributeController" />
+				<entry key="/attribute-value"
+					value-ref="attributeValueController" />
+				<entry key="/sites" value-ref="sitesController" />
+			</map>
+		</property>
+	</bean>
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>cn.net.openid.jos.web.messages</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="velocityConfigurer"
+		class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath"
+			value="/WEB-INF/view/velocity/" />
+		<property name="configLocation">
+			<value>/WEB-INF/velocity.properties</value>
+		</property>
+	</bean>
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="prefix" value="" />
+		<property name="suffix" value=".vm" />
+		<property name="contentType" value="text/html; charset=UTF-8" />
+		<property name="exposeSpringMacroHelpers" value="true" />
+		<property name="exposeSessionAttributes" value="true" />
+		<property name="toolboxConfigLocation">
+			<value>/WEB-INF/toolbox.xml</value>
+		</property>
+	</bean>
+	<bean id="localeChangeInterceptor"
+		class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+		<property name="paramName" value="hl" />
+	</bean>
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
+</beans>

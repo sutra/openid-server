@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<title>#springMessage("openid")</title>
+	</head>
+	<body>
+		<div>
+			#parse("header.vm")
+			#if(!${userSession.loggedIn})
+			<form action="home" method="post">
+				<div>
+					<label for="username">OpenID: </label>
+					${josConfiguration.identifierPrefix}
+					<input type="text" id="username" name="username" class="sexy" size="16" accesskey="U" />
+					${josConfiguration.identifierSuffix}
+					<input type="submit" name="login" value="#springMessage("login")" class="button" accesskey="L" />
+					##<input type="submit" name="index.login" value="#springMessage("login.other")" class="button" accesskey="A" />
+					<input type="submit" name="register" value="#springMessage("register")" class="button" accesskey="R" />
+				</div>
+			</form>
+			<script type="text/javascript">
+				<!--
+				document.getElementById("username").focus();
+				//-->
+			</script>
+			#else
+				#parse("detail.vm")
+			#end
+			#parse("footer.vm")
+		</div>
+	</body>
+</html>

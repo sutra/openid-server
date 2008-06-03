@@ -1,0 +1,13 @@
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("email")</title>
+	</head>
+	<body>
+	<div>
+		#parse("header.vm")
+		<div>E-mail removed.</div>
+		<a href="email">#springMessage("message.email.backToEmail")</a>
+		#parse("footer.vm")
+	</div>
+</body>
+</html>
