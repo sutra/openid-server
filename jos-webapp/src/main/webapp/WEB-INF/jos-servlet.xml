@@ -65,8 +65,6 @@
 			value="cn.net.openid.jos.domain.Email" />
 		<property name="formView" value="email" />
 		<property name="successView" value="email-success" />
-		<property name="validator" ref="emailValidator" />
-		<property name="localeResolver" ref="localeResolver" />
 	</bean>
 	<bean id="deleteEmailController"
 		class="cn.net.openid.jos.web.controller.DeleteEmailController"
@@ -77,25 +75,19 @@
 		parent="abstractJosSimpleFormController">
 		<property name="commandClass"
 			value="cn.net.openid.jos.web.form.ConfirmEmailForm" />
-		<property name="formView" value="email-confirm" />
-		<property name="successView" value="email-confirm-success" />
+		<property name="formView" value="confirm-email" />
+		<property name="successView" value="confirm-email-success" />
 	</bean>
-	<bean id="emailSetPrimaryController"
-		class="cn.net.openid.jos.web.controller.SetPrimaryEmailController"
-		parent="abstractJosController" />
 
-	<bean id="passwordsController"
-		class="cn.net.openid.jos.web.controller.PasswordsController"
-		parent="abstractJosController">
-	</bean>
 	<!-- Edit the password. -->
 	<bean id="editPasswordController"
 		class="cn.net.openid.jos.web.controller.EditPasswordController"
 		parent="abstractJosSimpleFormController">
 		<property name="commandClass"
 			value="cn.net.openid.jos.web.form.EditPasswordForm" />
-		<property name="formView" value="password" />
-		<property name="successView" value="password-success" />
+		<property name="commandName" value="editPasswordForm" />
+		<property name="formView" value="edit-password" />
+		<property name="successView" value="edit-password-success" />
 	</bean>
 
 	<!-- Persona. -->
@@ -146,7 +138,12 @@
 
 	<bean id="sitesController"
 		class="cn.net.openid.jos.web.controller.SitesController"
-		parent="abstractJosController" />
+		parent="abstractJosSimpleFormController">
+		<property name="commandClass"
+			value="cn.net.openid.jos.web.form.SitesForm" />
+		<property name="formView" value="sites" />
+		<property name="successView" value="sites" />
+	</bean>
 
 	<bean id="humanLanguageSelectionController"
 		class="cn.net.openid.jos.web.controller.HumanLanguageSelectionController">
@@ -160,7 +157,6 @@
 		<property name="interceptors">
 			<list>
 				<ref local="localeChangeInterceptor" />
-				<ref local="themeChangeInterceptor" />
 			</list>
 		</property>
 		<property name="urlMap">
@@ -189,7 +185,6 @@
 			<list>
 				<ref local="userLoggedInInterceptor" />
 				<ref local="localeChangeInterceptor" />
-				<ref local="themeChangeInterceptor" />
 			</list>
 		</property>
 		<property name="urlMap">
@@ -199,9 +194,6 @@
 				<entry key="/email" value-ref="emailController" />
 				<entry key="/email-remove"
 					value-ref="deleteEmailController" />
-				<entry key="/email-set-primary"
-					value-ref="emailSetPrimaryController" />
-				<entry key="/passwords" value-ref="passwordsController" />
 				<entry key="/password"
 					value-ref="editPasswordController" />
 				<entry key="/personas" value-ref="personasController" />
@@ -222,13 +214,7 @@
 		class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basenames">
 			<list>
-				<value>messages-custom</value>
 				<value>cn.net.openid.jos.web.messages</value>
-				<value>cn.net.openid.jos.web.buttons</value>
-				<value>cn.net.openid.jos.web.email</value>
-				<value>cn.net.openid.jos.web.password</value>
-				<value>cn.net.openid.jos.web.persona</value>
-				<value>cn.net.openid.jos.web.site</value>
 			</list>
 		</property>
 	</bean>
@@ -251,16 +237,10 @@
 			<value>/WEB-INF/toolbox.xml</value>
 		</property>
 	</bean>
-
 	<bean id="localeChangeInterceptor"
 		class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
 		<property name="paramName" value="hl" />
 	</bean>
 	<bean id="localeResolver"
 		class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
-
-	<bean id="themeChangeInterceptor"
-		class="org.springframework.web.servlet.theme.ThemeChangeInterceptor" />
-	<bean id="themeResolver"
-		class="org.springframework.web.servlet.theme.SessionThemeResolver" />
 </beans>

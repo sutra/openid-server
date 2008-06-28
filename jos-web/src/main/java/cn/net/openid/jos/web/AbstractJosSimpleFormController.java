@@ -11,7 +11,6 @@ import org.apache.commons.logging.LogFactory;
 import org.openid4java.server.ServerManager;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
-import cn.net.openid.jos.domain.User;
 import cn.net.openid.jos.service.JosService;
 
 /**
@@ -41,22 +40,11 @@ public abstract class AbstractJosSimpleFormController extends
 		this.serverManager = serverManager;
 	}
 
-	/* User Session */
+	public UserSession getUser(HttpServletRequest request) {
+		return WebUtils.getOrCreateUserSession(request.getSession());
+	}
 
-	public UserSession getUserSession(HttpSession session) {
+	public UserSession getUser(HttpSession session) {
 		return WebUtils.getOrCreateUserSession(session);
 	}
-
-	public UserSession getUserSession(HttpServletRequest request) {
-		return getUserSession(request.getSession());
-	}
-
-	public User getUser(HttpSession session) {
-		return this.getUserSession(session).getUser();
-	}
-
-	public User getUser(HttpServletRequest request) {
-		return this.getUserSession(request).getUser();
-	}
-
 }

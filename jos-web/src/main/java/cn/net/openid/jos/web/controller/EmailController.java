@@ -7,31 +7,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.validation.BindException;
-import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import cn.net.openid.jos.domain.Email;
 import cn.net.openid.jos.domain.User;
 import cn.net.openid.jos.web.AbstractJosSimpleFormController;
+import cn.net.openid.jos.web.UserSession;
 
 /**
  * @author Sutra Zhou
  * 
  */
 public class EmailController extends AbstractJosSimpleFormController {
-	private LocaleResolver localeResolver;
-
-	/**
-	 * @param localeResolver
-	 *            the localeResolver to set
-	 */
-	public void setLocaleResolver(LocaleResolver localeResolver) {
-		this.localeResolver = localeResolver;
-	}
-
 	/*
 	 * （非 Javadoc）
 	 * 
@@ -40,9 +28,11 @@ public class EmailController extends AbstractJosSimpleFormController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request)
 			throws Exception {
-		User user = getUser(request);
+		UserSession userSession = getUser(request);
+		String userId = userSession.getUserId();
+		User user = this.josService.getUser(userId);
 
-		Collection<Email> emails = josService.getEmails(user);
+		Collection<Email> emails = this.josService.getEmailsByUserId(userId);
 		Collection<Email> confirmedEmails = new ArrayList<Email>(emails.size());
 		Collection<Email> unconfirmedEmails = new ArrayList<Email>(emails
 				.size());
@@ -62,20 +52,15 @@ public class EmailController extends AbstractJosSimpleFormController {
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * （非 Javadoc）
 	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
-	 *      org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(java.lang.Object)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request,
-			HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
+	protected ModelAndView onSubmit(Object command) throws Exception {
 		Email email = (Email) command;
-		email.setLocale(localeResolver.resolveLocale(request));
-		josService.insertEmail(getUser(request), email);
-		return super.onSubmit(request, response, command, errors);
+		this.josService.insertEmail(email);
+		return super.onSubmit(command);
 	}
 
 }

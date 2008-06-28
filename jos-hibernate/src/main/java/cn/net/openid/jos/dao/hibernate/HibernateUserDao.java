@@ -3,6 +3,8 @@
  */
 package cn.net.openid.jos.dao.hibernate;
 
+import java.util.List;
+
 import cn.net.openid.jos.dao.UserDao;
 import cn.net.openid.jos.domain.User;
 
@@ -19,7 +21,7 @@ public class HibernateUserDao extends BaseHibernateEntityDao<User> implements
 	 * @see cn.net.openid.dao.UserDao#getUser(java.lang.String)
 	 */
 	public User getUser(String id) {
-		return get(id);
+		return this.get(id);
 	}
 
 	/*
@@ -27,17 +29,24 @@ public class HibernateUserDao extends BaseHibernateEntityDao<User> implements
 	 * 
 	 * @see cn.net.openid.dao.UserDao#getUserByUsername(java.lang.String)
 	 */
+	@SuppressWarnings("unchecked")
 	public User getUserByUsername(String username) {
-		return findUnique("from User where username = ?", username);
+		List<User> users = getHibernateTemplate().find(
+				"from User where username = ?", username);
+		if (users.isEmpty()) {
+			return null;
+		} else {
+			return users.get(0);
+		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.dao.UserDao#insertUser(cn.net.openid.jos.domain.User)
+	 * @see cn.net.openid.dao.UserDao#saveUser(cn.net.openid.User)
 	 */
-	public void insertUser(User user) {
-		getHibernateTemplate().save(user);
+	public String insertUser(User user) {
+		return (String) this.getHibernateTemplate().save(user);
 	}
 
 	/*
@@ -46,7 +55,7 @@ public class HibernateUserDao extends BaseHibernateEntityDao<User> implements
 	 * @see cn.net.openid.dao.UserDao#updateUser(cn.net.openid.User)
 	 */
 	public void updateUser(User user) {
-		getHibernateTemplate().update(user);
+		this.getHibernateTemplate().update(user);
 	}
 
 }

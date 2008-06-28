@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import cn.net.openid.jos.domain.JosConfiguration;
 import cn.net.openid.jos.service.JosService;
 
 /**
@@ -33,8 +32,6 @@ public class MemberFilter implements Filter {
 	private ServletContext context;
 
 	private Pattern fromPattern;
-
-	private Pattern unallowableUsernamePattern;
 
 	/*
 	 * (non-Javadoc)
@@ -59,16 +56,11 @@ public class MemberFilter implements Filter {
 
 		Matcher matcher = this.fromPattern.matcher(url);
 		if (matcher.find()) {
-			String username = matcher.group(1).toLowerCase();
-			matcher = this.unallowableUsernamePattern.matcher(username);
-			if (!matcher.matches()) {
-				this.dispatch(request, response, username);
-			} else {
-				log.debug("The username parsed from the url is unallowable.");
-				chain.doFilter(request, response);
-			}
+			String path = "/member/" + matcher.group(1);// ->/member/$1
+			log.debug("path: " + path);
+			RequestDispatcher rd = this.context.getRequestDispatcher(path);
+			rd.forward(request, response);
 		} else {
-			log.debug("The url is not matches.");
 			chain.doFilter(request, response);
 		}
 	}
@@ -85,18 +77,8 @@ public class MemberFilter implements Filter {
 				.debug("fromPattern: "
 						+ josService.getJosConfiguration()
 								.getMemberFilterFromPattern());
-		JosConfiguration domainConfiguration = josService.getJosConfiguration();
-		this.fromPattern = Pattern.compile(domainConfiguration
-				.getMemberFilterFromPattern());
-		this.unallowableUsernamePattern = Pattern.compile(domainConfiguration
-				.getUnallowableUsernamePattern(), Pattern.CASE_INSENSITIVE);
+		this.fromPattern = Pattern.compile(josService.getJosConfiguration()
+				.getMemberFilterFromPattern(), Pattern.CASE_INSENSITIVE);
 	}
 
-	private void dispatch(ServletRequest request, ServletResponse response,
-			String username) throws ServletException, IOException {
-		String path = "/member/" + username;// ->/member/$1
-		log.debug("path: " + path);
-		RequestDispatcher rd = this.context.getRequestDispatcher(path);
-		rd.forward(request, response);
-	}
 }

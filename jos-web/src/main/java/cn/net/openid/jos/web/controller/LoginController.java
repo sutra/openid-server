@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,6 +17,7 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
 
+import cn.net.openid.jos.domain.Password;
 import cn.net.openid.jos.domain.User;
 import cn.net.openid.jos.web.AbstractJosSimpleFormController;
 import cn.net.openid.jos.web.ApprovingRequest;
@@ -31,6 +33,34 @@ public class LoginController extends AbstractJosSimpleFormController {
 	@SuppressWarnings("unused")
 	private static final Log log = LogFactory.getLog(LoginController.class);
 
+	private User check(LoginForm lf) {
+		User user = josService.getUserByUsername(lf.getUsername());
+		if (user == null) {
+			return null;
+		}
+
+		// List<Credential> credentials =
+		// daoFacade.getCredentials(user.getId());
+		// for (Credential c : credentials) {
+		// log.debug("Password: " + new String(c.getInfo()));
+		// try {
+		// if (new String(c.getInfo(), "UTF-8").equals(new String(lf
+		// .getPassword().getBytes("UTF-8")))) {
+		// return user;
+		// }
+		// } catch (UnsupportedEncodingException e) {
+		// throw new RuntimeException(e);
+		// }
+		// }
+		Password password = this.josService.getPasswordByUserId(user.getId());
+		if (password.getShaHex().equalsIgnoreCase(
+				DigestUtils.shaHex(lf.getPassword()))) {
+			return user;
+		} else {
+			return null;
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -41,12 +71,12 @@ public class LoginController extends AbstractJosSimpleFormController {
 	protected void onBindAndValidate(HttpServletRequest request,
 			Object command, BindException errors) throws Exception {
 		LoginForm lf = (LoginForm) command;
-		User user = josService.getUser(lf.getUsername(), lf.getPassword());
+		User user = this.check(lf);
 		if (user == null) {
 			errors.rejectValue("username", "error.login.failed");
 		} else {
 			HttpSession session = request.getSession();
-			UserSession userSession = getUserSession(session);
+			UserSession userSession = getUser(session);
 			userSession.setUser(user);
 			userSession.setLoggedIn(true);
 			userSession.setIdentifier(this.josService.buildOpenidUrl(lf
@@ -68,7 +98,7 @@ public class LoginController extends AbstractJosSimpleFormController {
 			HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
 		String token = (String) request.getAttribute("token");
-		UserSession userSession = getUserSession(request);
+		UserSession userSession = getUser(request);
 		ApprovingRequest checkIdRequest = userSession
 				.getApprovingRequest(token);
 		if (checkIdRequest != null) {

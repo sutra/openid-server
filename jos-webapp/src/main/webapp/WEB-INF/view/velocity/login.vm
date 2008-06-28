@@ -8,10 +8,10 @@
 		#parse("header.vm")
 		<fieldset>
 			<legend>#springMessage("login")</legend>
-			<form action="login#if($token && $token != '')?token=$!token#end" method="post">
+			<form action="login?token=$!token" method="post">
 
-				#if($token && $token != "" && $approvingRequest && $approvingRequest.authRequest)
-					You must sign in to authenticate to $!approvingRequest.authRequest.realm as $!approvingRequest.authRequest.identity.
+				#if($token && $token != "")
+					You must sign in to authenticate to $approvingRequest.authRequest.realm as $approvingRequest.authRequest.claimed.
 				#end
 
 				<table>
@@ -30,7 +30,7 @@
 					#springBind("command.password")
 					<tr>
 						<td class="label">
-							<label for="password">#springMessage("password.label.plaintext")</label>
+							<label for="password">#springMessage("label.password")</label>
 						</td>
 						<td>
 							#springFormPasswordInput("command.password" 'class="common" size="33"')
@@ -40,7 +40,7 @@
 					<tr>
 						<td>&nbsp;</td>
 						<td>
-							<button type="submit">#springMessage("button.login")</button>
+							<input type="submit" value="#springMessage('login')" class="button" />
 							##<a href="index.login" title="#springMessage('login.other')">#springMessage("login.other")</a>
 						</td>
 					</tr>

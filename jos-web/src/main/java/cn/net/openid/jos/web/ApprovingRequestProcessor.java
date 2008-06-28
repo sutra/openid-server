@@ -30,7 +30,6 @@ import org.openid4java.server.ServerManager;
 
 import cn.net.openid.jos.domain.Persona;
 import cn.net.openid.jos.domain.Site;
-import cn.net.openid.jos.domain.User;
 import cn.net.openid.jos.service.JosService;
 
 /**
@@ -60,7 +59,7 @@ public class ApprovingRequestProcessor {
 	private ApprovingRequest checkIdRequest;
 	private AuthRequest authRequest;
 	private UserSession userSession;
-	private User user;
+	private String userId;
 
 	/**
 	 * @param httpReq
@@ -83,7 +82,7 @@ public class ApprovingRequestProcessor {
 		this.serverManager = serverManager;
 		this.userSession = WebUtils.getOrCreateUserSession(this.httpReq
 				.getSession());
-		this.user = userSession.getUser();
+		this.userId = userSession.getUserId();
 		this.checkIdRequest = checkIdRequest;
 		this.authRequest = checkIdRequest.getAuthRequest();
 	}
@@ -131,7 +130,7 @@ public class ApprovingRequestProcessor {
 	private boolean isLoggedInUserOwnClaimedId() {
 		boolean ret;
 		if (userSession.isLoggedIn()
-				&& this.authRequest.getIdentity().equals(
+				&& this.authRequest.getClaimed().equals(
 						userSession.getIdentifier())) {
 			ret = true;
 		} else {
@@ -147,9 +146,9 @@ public class ApprovingRequestProcessor {
 	 * @throws IOException
 	 */
 	private void checkApproval() throws IOException {
-		Site site = josService.getSite(user, authRequest.getRealm());
+		Site site = josService.getSite(userId, authRequest.getRealm());
 		if (site != null && site.isAlwaysApprove()) {
-			josService.updateApproval(user, authRequest.getRealm());
+			josService.updateApproval(userId, authRequest.getRealm());
 
 			// return to `return_to' page.
 			redirectToReturnToPage(true, site.getPersona());
@@ -202,15 +201,6 @@ public class ApprovingRequestProcessor {
 					log.error("", e);
 				}
 			}
-
-			try {
-				serverManager.sign((AuthSuccess) response);
-			} catch (ServerException e) {
-				log.error("", e);
-			} catch (AssociationException e) {
-				log.error("", e);
-			}
-
 			// caller will need to decide which of the following to use:
 
 			// option1: GET HTTP-redirect to the return_to URL
@@ -252,6 +242,12 @@ public class ApprovingRequestProcessor {
 					// (alternatively) manually add attribute values
 					// sregResp.addAttribute("email", email);
 					response.addExtension(sregResp);
+				}
+
+				try {
+					serverManager.sign((AuthSuccess) response);
+				} catch (ServerException e) {
+				} catch (AssociationException e) {
 				}
 			} else {
 				throw new UnsupportedOperationException("TODO");

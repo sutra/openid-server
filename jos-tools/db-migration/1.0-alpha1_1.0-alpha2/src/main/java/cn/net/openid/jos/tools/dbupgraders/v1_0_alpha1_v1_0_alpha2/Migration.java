@@ -193,10 +193,9 @@ public class Migration {
 		}
 	}
 
-	private static int getCount(Connection conn, String tableName)
-			throws SQLException {
+	private int getCount(Connection conn, String tableName) throws SQLException {
 		int count = 0;
-		Statement stmt = conn.createStatement();
+		Statement stmt = oldConn.createStatement();
 		ResultSet rs = stmt.executeQuery("select count(*) from " + tableName);
 		while (rs.next()) {
 			count = rs.getInt(1);
@@ -316,11 +315,11 @@ public class Migration {
 				+ "\nfrom openid_credential c1 inner join openid_user u1 on u1.user_id = c1.credential_userid"
 				+ "\n where c1.credential_handler = '1'";
 		String newSql = "insert into jos_password"
-				+ "\n(password_id, password_user_id, password_name, password_plaintext, password_sha_hex, password_creation_date)"
-				+ "values(?, ?, 'Default Password', ?, ?, ?)";
+				+ "\n(password_id, password_user_id, password_plaintext, password_sha_hex, password_creation_date)"
+				+ "values(?, ?, ?, ?, ?)";
 
 		PreparedStatement oldPstmt = oldConn.prepareStatement(oldSql);
-		PreparedStatement newPstmt = newConn.prepareStatement(newSql);
+		PreparedStatement newPstmt = oldConn.prepareStatement(newSql);
 		ResultSet rs = oldPstmt.executeQuery();
 		try {
 			String passwordId, passwordUserId, passwordPlaintext;

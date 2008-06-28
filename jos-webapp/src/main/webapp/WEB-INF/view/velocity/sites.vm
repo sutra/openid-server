@@ -1,30 +1,27 @@
 <html>
 	<head>
-		<title>#springMessage("openid") - #springMessage("site.title.sites")</title>
+		<title>#springMessage("openid") - #springMessage("sites")</title>
 	</head>
 	<body>
 	<div>
 		#parse("header.vm")
 		<fieldset>
-			<legend>#springMessage("site.title.sites")</legend>
+			<legend>#springMessage("sites")</legend>
 			<form method="post">
 			<table class="list">
 				<thead>
 					<tr>
-						<th>#springMessage("site.title.realmUrl")</th>
-						<th>#springMessage("site.title.alwaysApprove")</th>
-						<th>#springMessage("site.title.persona")</th>
-						<th>#springMessage("site.title.lastAttempt")</th>
-						<th>#springMessage("site.title.approvals")</th>
+						<th>#springMessage("message.site.realmUrl")</th>
+						<th>#springMessage("message.site.alwaysApprove")</th>
+						<th>#springMessage("message.site.lastAttempt")</th>
+						<th>#springMessage("message.site.approvals")</th>
 					</tr>
 				</thead>
 				#foreach($site in $sites)
 					<tr>
-						<td style="text-align:left;">
+						<td>
 							<input type="hidden" name="realmId" value="$!{esc.html($!{site.realm.id})}" />
-							<a href="$!{esc.html($!{site.realm.url})}">
-								$!{esc.html($!{site.realm.url})}
-							</a>
+							<a href="$!{esc.html($!{site.realm.url})}">$!{esc.html($!{site.realm.url})}</a>
 						</td>
 						<td>
 							#if($site.alwaysApprove)
@@ -32,11 +29,6 @@
 							#else
 								<input type="checkbox" name="alwaysApprove_$!{esc.html($!{site.realm.id})}" />
 							#end
-						</td>
-						<td>
-							<a href="persona?id=$!{esc.html($!{site.persona.id})}">
-								$!{esc.html($!{site.persona.name})}
-							</a>
 						</td>
 						<td>
 							$site.lastAttempt
@@ -48,9 +40,7 @@
 				#end
 				<tfoot>
 					<tr>
-						<td colspan="5">
-							<button type="submit">#springMessage("button.saveChanges")</button>
-						</td>
+						<td colspan="5"><input type="submit" value="Save Changes" class="button" /></td>
 					</tr>
 				</tfoot>
 			</table>

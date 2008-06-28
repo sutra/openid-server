@@ -1,17 +1,17 @@
 <html>
 	<head>
-		<title>#springMessage("openid") - #springMessage("email.title.confirming")</title>
+		<title>#springMessage("openid") - #springMessage("email")</title>
 	</head>
 	<body>
 	<div>
 		#parse("header.vm")
 		<fieldset>
-		<legend>#springMessage("email.title.confirming")</legend>
+		<legend>Confirming e-mail address</legend>
 			<form action="email-confirm" method="post">
 				<div>
-					<label for="confirmationCode">#springMessage("email.label.confirmationCode")</label>
+					<label for="confirmationCode">Confirmation code: </label>
 					#springFormInput("command.confirmationCode" 'class="common" style="width:50%"')
-					<button type="submit">#springMessage("email.button.confirm")</button>
+					<input type="submit" value="Confirm" class="button" />
 					<div>#springShowErrors("" "error")</div>
 				</div>
 			</form>

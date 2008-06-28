@@ -4,13 +4,11 @@
 package cn.net.openid.jos.dao.hibernate;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import cn.net.openid.jos.dao.AttributeValueDao;
 import cn.net.openid.jos.domain.AttributeValue;
-import cn.net.openid.jos.domain.User;
 
 /**
  * @author Sutra Zhou
@@ -22,13 +20,14 @@ public class HibernateAttributeValueDao extends
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.dao.AttributeValueDao#getAttributeValue(cn.net.openid.jos.domain.User,
+	 * @see cn.net.openid.dao.AttributeValueDao#getAttributeValue(java.lang.String,
 	 *      java.lang.String)
-	 */@SuppressWarnings("unchecked")
-	public String getAttributeValue(User user, String attributeId) {
+	 */
+	@SuppressWarnings("unchecked")
+	public String getAttributeValue(String userId, String attributeId) {
 		String q = "from AttributeValue where user.id = ? and attribute.id = ? order by index";
-		List<AttributeValue> attributeValues = this.find(q, user.getId(),
-				attributeId);
+		List<AttributeValue> attributeValues = this.find(q, new String[] {
+				userId, attributeId });
 		if (!attributeValues.isEmpty()) {
 			return attributeValues.get(0).getValue();
 		} else {
@@ -39,14 +38,14 @@ public class HibernateAttributeValueDao extends
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.dao.AttributeValueDao#getAttributeValues(cn.net.openid.jos.domain.User,
+	 * @see cn.net.openid.dao.AttributeValueDao#getAttributeValues(java.lang.String,
 	 *      java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-	public Collection<String> getAttributeValues(User user, String attributeId) {
+	public List<String> getAttributeValues(String userId, String attributeId) {
 		String q = "from AttributeValue where user.id = ? and attribute.id = ? order by index";
-		List<AttributeValue> attributeValues = this.find(q, user.getId(),
-				attributeId);
+		List<AttributeValue> attributeValues = this.find(q, new String[] {
+				userId, attributeId });
 		if (!attributeValues.isEmpty()) {
 			List<String> ret = new ArrayList<String>(attributeValues.size());
 			for (AttributeValue av : attributeValues) {
@@ -61,11 +60,11 @@ public class HibernateAttributeValueDao extends
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.dao.AttributeValueDao#getUserAttributeValues(cn.net.openid.jos.domain.User)
+	 * @see cn.net.openid.dao.AttributeValueDao#getUserAttributeValues(java.lang.String)
 	 */
-	public List<AttributeValue> getUserAttributeValues(User user) {
-		return find("from AttributeValue where user.id = ? order by index",
-				user.getId());
+	public List<AttributeValue> getUserAttributeValues(String userId) {
+		String q = "from AttributeValue where user.id = ? order by index";
+		return this.find(q, userId);
 	}
 
 	/*

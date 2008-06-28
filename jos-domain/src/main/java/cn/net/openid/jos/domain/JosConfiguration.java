@@ -20,8 +20,6 @@ public class JosConfiguration implements Serializable {
 	private String identifierPrefix;
 	private String identifierSuffix;
 	private String usernamePattern;
-	private String reservedUsernamePattern;
-	private String unallowableUsernamePattern;
 	private String memberFilterFromPattern;
 
 	/**
@@ -82,36 +80,6 @@ public class JosConfiguration implements Serializable {
 	 */
 	public void setUsernamePattern(String usernamePattern) {
 		this.usernamePattern = usernamePattern;
-	}
-
-	/**
-	 * @return the reservedUsernamePattern
-	 */
-	public String getReservedUsernamePattern() {
-		return reservedUsernamePattern;
-	}
-
-	/**
-	 * @param reservedUsernamePattern
-	 *            the reservedUsernamePattern to set
-	 */
-	public void setReservedUsernamePattern(String reservedUsernamePattern) {
-		this.reservedUsernamePattern = reservedUsernamePattern;
-	}
-
-	/**
-	 * @return the unallowableUsernamePattern
-	 */
-	public String getUnallowableUsernamePattern() {
-		return unallowableUsernamePattern;
-	}
-
-	/**
-	 * @param unallowableUsernamePattern
-	 *            the unallowableUsernamePattern to set
-	 */
-	public void setUnallowableUsernamePattern(String unallowableUsernamePattern) {
-		this.unallowableUsernamePattern = unallowableUsernamePattern;
 	}
 
 	/**

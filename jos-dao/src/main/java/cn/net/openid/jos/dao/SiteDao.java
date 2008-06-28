@@ -6,20 +6,20 @@ package cn.net.openid.jos.dao;
 import java.util.List;
 
 import cn.net.openid.jos.domain.Site;
-import cn.net.openid.jos.domain.User;
 
 /**
  * @author Sutra Zhou
  * 
  */
 public interface SiteDao {
-	Site getSite(User user, String realmUrl);
+	Site getSite(String userId, String realmUrl);
 
-	List<Site> getSites(User user);
+	List<Site> getSites(String userId);
 
 	void insertSite(Site site);
 
 	void updateSite(Site site);
 
-	void updateAlwaysApprove(User user, String realmId, boolean alwaysApprove);
+	void updateAlwaysApprove(String userId, String realmId,
+			boolean alwaysApprove);
 }

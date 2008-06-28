@@ -5,8 +5,8 @@
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
-				<value>WEB-INF/custom/jdbc.properties</value>
-				<value>WEB-INF/custom/jos.xml</value>
+				<value>WEB-INF/jdbc.properties</value>
+				<value>WEB-INF/jos.xml</value>
 			</list>
 		</property>
 	</bean>
@@ -17,10 +17,6 @@
 			value="${jos.openid.server.url}" />
 		<property name="usernamePattern"
 			value="${jos.member.username.pattern}" />
-		<property name="reservedUsernamePattern"
-			value="${jos.member.username.reserved.pattern}" />
-		<property name="unallowableUsernamePattern"
-			value="${jos.member.username.unallowable.pattern}" />
 		<property name="identifierPrefix"
 			value="${jos.member.identifier.prefix}" />
 		<property name="identifierSuffix"
@@ -40,7 +36,6 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="transactionAttributes">
 			<props>
-				<prop key="set*">PROPAGATION_REQUIRED</prop>
 				<prop key="insert*">PROPAGATION_REQUIRED</prop>
 				<prop key="update*">PROPAGATION_REQUIRED</prop>
 				<prop key="save*">PROPAGATION_REQUIRED</prop>
@@ -106,14 +101,11 @@
 	</bean>
 
 	<bean id="personaValidator"
-		class="cn.net.openid.jos.web.validation.PersonaValidator" />
-	<bean id="emailValidator"
-		class="cn.net.openid.jos.web.validation.EmailValidator">
-		<property name="pattern"
-			value="\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" />
+		class="cn.net.openid.jos.web.validation.PersonaValidator">
 	</bean>
 	<bean id="registerFormValidator"
 		class="cn.net.openid.jos.web.validation.RegisterFormValidator">
-		<property name="domainConfiguration" ref="josConfiguration" />
+		<property name="usernamePattern"
+			value="${jos.member.username.pattern}" />
 	</bean>
 </beans>

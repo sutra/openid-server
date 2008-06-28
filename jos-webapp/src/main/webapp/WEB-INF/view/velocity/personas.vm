@@ -1,42 +1,31 @@
 <html>
 	<head>
-		<title>
-			#springMessage("openid") - #springMessage("persona.title.personas")
-		</title>
+		<title>#springMessage("openid") - #springMessage("personas")</title>
 	</head>
 	<body>
 	<div>
 		#parse("header.vm")
 		<fieldset>
-			<legend>#springMessage("persona.title.personas")</legend>
-			<form method="post">
+			<legend>#springMessage("personas")</legend>
 			<table class="list">
 				<thead>
 					<tr>
-						<th>#springMessage("persona.title.delete")</th>
-						<th>#springMessage("persona.title.name")</th>
-						<th>#springMessage("persona.title.nickname")</th>
-						<th>#springMessage("persona.title.email")</th>
-						<th>#springMessage("persona.title.fullname")</th>
-						<th>#springMessage("persona.title.dob")</th>
-						<th>#springMessage("persona.title.gender")</th>
-						<th>#springMessage("persona.title.postcode")</th>
-						<th>#springMessage("persona.title.country")</th>
-						<th>#springMessage("persona.title.language")</th>
-						<th>#springMessage("persona.title.timezone")</th>
+						<th>#springMessage("message.persona.name")</th>
+						<th>#springMessage("message.persona.nickname")</th>
+						<th>#springMessage("message.persona.email")</th>
+						<th>#springMessage("message.persona.fullname")</th>
+						<th>#springMessage("message.persona.dob")</th>
+						<th>#springMessage("message.persona.gender")</th>
+						<th>#springMessage("message.persona.postcode")</th>
+						<th>#springMessage("message.persona.country")</th>
+						<th>#springMessage("message.persona.language")</th>
+						<th>#springMessage("message.persona.timezone")</th>
 					</tr>
 				</thead>
 				<tbody>
 				#foreach($persona in $personas)
 					<tr>
-						<td>
-							<input type="checkbox" name="deletePersonaId" value="$!{esc.html($!{persona.id})}" />
-						</td>
-						<td>
-							<a href="persona?id=$!{esc.html($!{persona.id})}">
-								$!{esc.html($!{persona.name})}
-							</a>
-						</td>
+						<td><a href="persona?id=$!{esc.html($!{persona.id})}">$!{esc.html($!{persona.name})}</a></td>
 						<td>$!{esc.html($!{persona.nickname})}</td>
 						<td>$!{esc.html($!{persona.email})}</td>
 						<td>$!{esc.html($!{persona.fullname})}</td>
@@ -51,14 +40,10 @@
 				</tbody>
 				<tfoot>
 					<tr>
-						<td colspan="11">
-							<button type="submit">#springMessage("button.remove")</button>
-							<a href="persona">#springMessage("persona.button.addNewPersona")</a>
-						</td>
+						<td colspan="10"><a href="persona">Add New Persona</a></td>
 					</tr>
 				</tfoot>
 			</table>
-			</form>
 		</fieldset>
 		#parse("footer.vm")
 	</div>

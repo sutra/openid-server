@@ -60,21 +60,21 @@ public class ApprovingController extends AbstractJosSimpleFormController {
 		String token = request.getParameter("token");
 		form.setToken(token);
 
-		UserSession userSession = getUserSession(request);
+		UserSession userSession = getUser(request);
+		String userId = userSession.getUserId();
 		ApprovingRequest checkIdRequest = userSession
 				.getApprovingRequest(token);
 		if (checkIdRequest != null) {
 			AuthRequest authReq = checkIdRequest.getAuthRequest();
 			form.setAuthRequest(authReq);
 			String realmUrl = authReq.getRealm();
-			Site site = josService.getSite(userSession.getUser(), realmUrl);
+			Site site = josService.getSite(userId, realmUrl);
 			if (site != null && site.getPersona() != null) {
 				form.setPersonaId(site.getPersona().getId());
 			}
 		}
 		Map<String, Object> models = new HashMap<String, Object>();
-		models.put("personas", this.josService.getPersonas(userSession
-				.getUser()));
+		models.put("personas", this.josService.getPersonas(userId));
 		return models;
 	}
 
@@ -109,12 +109,13 @@ public class ApprovingController extends AbstractJosSimpleFormController {
 			throws Exception {
 		ApprovingForm form = (ApprovingForm) command;
 
-		UserSession userSession = getUserSession(request);
+		UserSession userSession = getUser(request);
 
 		ApprovingRequest checkIdRequest = userSession.getApprovingRequest(form
 				.getToken());
 		AuthRequest authReq = checkIdRequest.getAuthRequest();
 
+		String userId = userSession.getUserId();
 		String personaId = request.getParameter("personaId");
 
 		ApprovingRequestProcessor arp = new ApprovingRequestProcessor(request,
@@ -122,16 +123,14 @@ public class ApprovingController extends AbstractJosSimpleFormController {
 
 		Persona persona;
 		if (request.getParameter("allow_once") != null) {
-			persona = josService.getPersona(userSession.getUser(), personaId);
+			persona = josService.getPersona(userId, personaId);
 
-			josService.allow(userSession.getUser(), authReq.getRealm(),
-					persona, false);
+			josService.allow(userId, authReq.getRealm(), persona, false);
 			arp.checkId(ApprovingRequestProcessor.ALLOW_ONCE, persona);
 		} else if (request.getParameter("allow_forever") != null) {
-			persona = josService.getPersona(userSession.getUser(), personaId);
+			persona = josService.getPersona(userId, personaId);
 
-			josService.allow(userSession.getUser(), authReq.getRealm(),
-					persona, true);
+			josService.allow(userId, authReq.getRealm(), persona, true);
 			arp.checkId(ApprovingRequestProcessor.ALLOW_FOREVER, persona);
 		} else if (request.getParameter("deny") != null) {
 			arp.checkId(ApprovingRequestProcessor.DENY, null);

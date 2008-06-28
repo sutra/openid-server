@@ -5,8 +5,10 @@
 	<body>
 	<div>
 		#parse("header.vm")
-		<div>E-mail removed.</div>
-		<a href="email">#springMessage("message.email.backToEmail")</a>
+		<div>
+			Email confirmed.
+			<a href="email">#springMessage("message.email.backToEmail")</a>
+		</div>
 		#parse("footer.vm")
 	</div>
 </body>

@@ -3,10 +3,7 @@
  */
 package cn.net.openid.jos.dao;
 
-import java.util.Collection;
-
 import cn.net.openid.jos.domain.Password;
-import cn.net.openid.jos.domain.User;
 
 /**
  * @author Sutra Zhou
@@ -15,7 +12,9 @@ import cn.net.openid.jos.domain.User;
 public interface PasswordDao {
 	Password getPassword(String id);
 
-	Collection<Password> getPasswords(User user);
+	Password getPasswordByUserId(String userId);
+
+	Password getPasswordByUsername(String username);
 
 	void insertPassword(Password password);
 

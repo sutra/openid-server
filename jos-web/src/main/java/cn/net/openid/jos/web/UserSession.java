@@ -28,24 +28,24 @@ public class UserSession implements Serializable {
 
 	private static final Log log = LogFactory.getLog(UserSession.class);
 
-	private User user = new User();
+	private String userId;
+	private String username;
 	private String identifier;
-	private boolean loggedIn = false;
-	private Map<String, ApprovingRequest> approvingRequests = new HashMap<String, ApprovingRequest>();
+	private boolean loggedIn;
+	private Map<String, ApprovingRequest> approvingRequests;
+
+	public UserSession() {
+		this.approvingRequests = new HashMap<String, ApprovingRequest>();
+		this.loggedIn = false;
+	}
 
 	/**
 	 * @param user
 	 *            the user to set
 	 */
 	public void setUser(User user) {
-		this.user = user;
-	}
-
-	/**
-	 * @return the user
-	 */
-	public User getUser() {
-		return user;
+		this.userId = user.getId();
+		this.username = user.getUsername();
 	}
 
 	/**
@@ -59,14 +59,14 @@ public class UserSession implements Serializable {
 	 * @return the userId
 	 */
 	public String getUserId() {
-		return user.getId();
+		return userId;
 	}
 
 	/**
 	 * @return the username
 	 */
 	public String getUsername() {
-		return user.getUsername();
+		return username;
 	}
 
 	/**
@@ -90,6 +90,22 @@ public class UserSession implements Serializable {
 	 */
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
+	}
+
+	/**
+	 * @param userId
+	 *            the userId to set
+	 */
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+
+	/**
+	 * @param username
+	 *            the username to set
+	 */
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	/* Authentication Requests */

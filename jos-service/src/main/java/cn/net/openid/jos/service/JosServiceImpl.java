@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -139,8 +138,8 @@ public class JosServiceImpl implements JosService {
 	 * @see cn.net.openid.dao.DaoFacade#buildOpenidUrl(java.lang.String)
 	 */
 	public String buildOpenidUrl(String username) {
-		return String.format("%1$s%2$s%3$s", josConfiguration
-				.getIdentifierPrefix(), username, josConfiguration
+		return String.format("%1$s%2$s%3$s", this.josConfiguration
+				.getIdentifierPrefix(), username, this.josConfiguration
 				.getIdentifierSuffix());
 	}
 
@@ -150,7 +149,7 @@ public class JosServiceImpl implements JosService {
 	 * @see cn.net.openid.dao.DaoFacade#getUser(java.lang.String)
 	 */
 	public User getUser(String id) {
-		return userDao.getUser(id);
+		return this.userDao.getUser(id);
 	}
 
 	/*
@@ -159,34 +158,7 @@ public class JosServiceImpl implements JosService {
 	 * @see cn.net.openid.dao.DaoFacade#getUserByUsername(java.lang.String)
 	 */
 	public User getUserByUsername(String username) {
-		return userDao.getUserByUsername(username);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see cn.net.openid.jos.service.JosService#getUser(java.lang.String,
-	 *      java.lang.String)
-	 */
-	public User getUser(String username, String passwordPlaintext) {
-		if (StringUtils.isEmpty(username)) {
-			return null;
-		}
-		User user = getUserByUsername(username);
-		if (user == null) {
-			return null;
-		}
-
-		Collection<Password> passwords = getPasswords(user);
-		boolean foundPassword = false;
-		String passwordShaHex = DigestUtils.shaHex(passwordPlaintext);
-		for (Password password : passwords) {
-			if (password.getShaHex().equalsIgnoreCase(passwordShaHex)) {
-				foundPassword = true;
-				break;
-			}
-		}
-		return foundPassword ? user : null;
+		return this.userDao.getUserByUsername(username);
 	}
 
 	/*
@@ -196,121 +168,77 @@ public class JosServiceImpl implements JosService {
 	 *      cn.net.openid.domain.Password)
 	 */
 	public void insertUser(User user, Password password) {
-		userDao.insertUser(user);
-		passwordDao.insertPassword(password);
+		this.userDao.insertUser(user);
+		this.passwordDao.insertPassword(password);
+
+		// Credential credential = new Credential();
+		// credential.setUser(user);
+		// CredentialHandler credentialHandler = this.getCredentialHandler("1");
+		// if (credentialHandler == null) {
+		// throw new RuntimeException("没有找到密码凭据类型。");
+		// }
+		// credential.setHandler(credentialHandler);
+		// try {
+		// credential.setInfo(password.getPassword().getBytes("UTF-8"));
+		// } catch (UnsupportedEncodingException e) {
+		// throw new RuntimeException(e);
+		// }
+		//
+		// this.credentialDao.insertCredential(credential);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#updatePassword(cn.net.openid.jos.domain.User,
-	 *      java.lang.String, java.lang.String, java.lang.String)
+	 * @see cn.net.openid.dao.DaoFacade#updateUser(cn.net.openid.User)
 	 */
-	public void updatePassword(User user, String passwordId, String name,
-			String passwordPlaintext) {
-		Password password = getPassword(user, passwordId);
-		boolean insert = false;
-		if (password == null) {
-			password = new Password(user);
-			insert = true;
-		}
-
-		password.setName(name);
-		password.setPlaintext(passwordPlaintext);
-		password.setShaHex(DigestUtils.shaHex(password.getPlaintext()));
-
-		if (insert) {
-			passwordDao.insertPassword(password);
-		} else {
-			passwordDao.updatePassword(password);
-		}
+	public void updateUser(User user) {
+		this.userDao.updateUser(user);
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * （非 Javadoc）
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#deletePasswords(cn.net.openid.jos.domain.User,
-	 *      java.lang.String[])
+	 * @see cn.net.openid.dao.DaoFacade#getPasswordByUserId(java.lang.String)
 	 */
-	public void deletePasswords(User user, String[] passwordIds)
-			throws LastPasswordException {
-		for (String passwordId : passwordIds) {
-			Password password = passwordDao.getPassword(passwordId);
-			if (password.getUser().equals(user)) {
-				passwordDao.deletePassword(password.getId());
-			}
-		}
-		if (passwordDao.getPasswords(user).size() == 0) {
-			throw new LastPasswordException();
-		}
+	public Password getPasswordByUserId(String userId) {
+		return this.passwordDao.getPasswordByUserId(userId);
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * （非 Javadoc）
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#deleteEmail(cn.net.openid.jos.domain.User,
-	 *      java.lang.String)
+	 * @see cn.net.openid.dao.DaoFacade#deleteEmail(java.lang.String)
 	 */
-	public void deleteEmail(User user, String id) {
-		Email email = emailDao.getEmail(id);
-		if (email != null && email.getUser().equals(user)) {
-			emailDao.deleteEmail(id);
-		} else {
-			throw new NoPermissionException();
-		}
+	public void deleteEmail(String id) {
+		this.emailDao.deleteEmail(id);
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * （非 Javadoc）
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#setPrimaryEmail(cn.net.openid.jos.domain.User,
-	 *      java.lang.String)
+	 * @see cn.net.openid.dao.DaoFacade#getEmail(java.lang.String)
 	 */
-	public void setPrimaryEmail(User user, String id) {
-		Email email = getEmail(user, id);
-		if (email != null) {
-			Email oldPrimaryEmail = emailDao.getPrimaryEmail(user);
-			if (oldPrimaryEmail != null) {
-				oldPrimaryEmail.setPrimary(false);
-				emailDao.updateEmail(oldPrimaryEmail);
-			}
-			email.setPrimary(true);
-			emailDao.updateEmail(email);
-		}
+	public Email getEmail(String id) {
+		return this.emailDao.getEmail(id);
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * （非 Javadoc）
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#getEmail(cn.net.openid.jos.domain.User,
-	 *      java.lang.String)
+	 * @see cn.net.openid.dao.DaoFacade#getEmailsByUserId(java.lang.String)
 	 */
-	public Email getEmail(User user, String id) {
-		Email email = emailDao.getEmail(id);
-		return (email != null && email.getUser().equals(user)) ? email : null;
+	public Collection<Email> getEmailsByUserId(String userId) {
+		return this.emailDao.getEmailsByUserId(userId);
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * （非 Javadoc）
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#getEmails(cn.net.openid.jos.domain.User)
+	 * @see cn.net.openid.dao.DaoFacade#insertEmail(cn.net.openid.domain.Email)
 	 */
-	public Collection<Email> getEmails(User user) {
-		return emailDao.getEmails(user);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see cn.net.openid.jos.service.JosService#insertEmail(cn.net.openid.jos.domain.User,
-	 *      cn.net.openid.jos.domain.Email)
-	 */
-	public void insertEmail(User user, Email email) {
-		if (user.equals(email.getUser())) {
-			emailDao.insertEmail(email);
-		} else {
-			throw new NoPermissionException();
-		}
+	public void insertEmail(Email email) {
+		this.emailDao.insertEmail(email);
 	}
 
 	/*
@@ -337,81 +265,45 @@ public class JosServiceImpl implements JosService {
 	 */
 	public EmailConfirmationInfo getEmailConfirmationInfo(
 			String confirmationCode) {
-		return emailConfirmationInfoDao
+		return this.emailConfirmationInfoDao
 				.getEmailConfirmationInfo(confirmationCode);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#insertEmailConfirmationInfo(cn.net.openid.jos.domain.User,
-	 *      cn.net.openid.jos.domain.EmailConfirmationInfo)
+	 * @see cn.net.openid.jos.service.JosService#insertEmailConfirmationInfo(cn.net.openid.jos.domain.EmailConfirmationInfo)
 	 */
-	public void insertEmailConfirmationInfo(User user,
+	public void insertEmailConfirmationInfo(
 			EmailConfirmationInfo emailConfirmationInfo) {
-		if (user.equals(emailConfirmationInfo.getEmail().getUser())) {
-			emailConfirmationInfoDao
-					.insertEmailConfirmationInfo(emailConfirmationInfo);
-		} else {
-			throw new NoPermissionException();
-		}
+		this.emailConfirmationInfoDao
+				.insertEmailConfirmationInfo(emailConfirmationInfo);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#updateEmailConfirmationInfo(cn.net.openid.jos.domain.User,
-	 *      cn.net.openid.jos.domain.EmailConfirmationInfo)
+	 * @see cn.net.openid.jos.service.JosService#updateEmailConfirmationInfo(cn.net.openid.jos.domain.EmailConfirmationInfo)
 	 */
-	public void updateEmailConfirmationInfo(User user,
+	public void updateEmailConfirmationInfo(
 			EmailConfirmationInfo emailConfirmationInfo) {
-		if (user.equals(emailConfirmationInfo.getEmail().getUser())) {
-			emailConfirmationInfoDao
-					.updateEmailConfirmationInfo(emailConfirmationInfo);
-		} else {
-			throw new NoPermissionException();
-		}
+		this.emailConfirmationInfoDao
+				.updateEmailConfirmationInfo(emailConfirmationInfo);
 	}
 
 	public void confirmEmail(String confirmationCode)
 			throws EmailConfirmationInfoNotFoundException {
-		EmailConfirmationInfo eci = emailConfirmationInfoDao
+		EmailConfirmationInfo eci = this.emailConfirmationInfoDao
 				.getEmailConfirmationInfo(confirmationCode);
-		if (log.isDebugEnabled()) {
-			log.debug("email confirmation info: " + eci);
-		}
+		log.debug("email confirmation info: " + eci);
 		if (eci == null || !eci.isSent() || eci.isConfirmed()) {
 			throw new EmailConfirmationInfoNotFoundException();
 		}
 
 		eci.getEmail().setConfirmed(true);
-		// Set primary if its the first confirmed e-mail address of the user.
-		eci.getEmail().setPrimary(
-				emailDao.getEmails(eci.getEmail().getUser()).size() == 1);
 		eci.setConfirmed(true);
 		eci.setConfirmedDate(new Date());
-		emailConfirmationInfoDao.updateEmailConfirmationInfo(eci);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see cn.net.openid.jos.service.JosService#getPasswords(cn.net.openid.jos.domain.User)
-	 */
-	public Collection<Password> getPasswords(User user) {
-		return passwordDao.getPasswords(user);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see cn.net.openid.jos.service.JosService#getPassword(cn.net.openid.jos.domain.User,
-	 *      java.lang.String)
-	 */
-	public Password getPassword(User user, String passwordId) {
-		Password password = passwordDao.getPassword(passwordId);
-		return (password != null && password.getUser().equals(user)) ? password
-				: null;
+		this.emailConfirmationInfoDao.updateEmailConfirmationInfo(eci);
 	}
 
 	/*
@@ -420,7 +312,7 @@ public class JosServiceImpl implements JosService {
 	 * @see cn.net.openid.dao.DaoFacade#getAttribute(java.lang.String)
 	 */
 	public Attribute getAttribute(String id) {
-		return attributeDao.getAttribute(id);
+		return this.attributeDao.getAttribute(id);
 	}
 
 	/*
@@ -429,7 +321,7 @@ public class JosServiceImpl implements JosService {
 	 * @see cn.net.openid.dao.DaoFacade#getAttributes()
 	 */
 	public Collection<Attribute> getAttributes() {
-		return attributeDao.getAttributes();
+		return this.attributeDao.getAttributes();
 	}
 
 	/*
@@ -438,34 +330,30 @@ public class JosServiceImpl implements JosService {
 	 * @see cn.net.openid.dao.DaoFacade#saveAttribute(cn.net.openid.domain.Attribute)
 	 */
 	public void saveAttribute(Attribute attribute) {
-		attributeDao.saveAttribute(attribute);
+		this.attributeDao.saveAttribute(attribute);
 	}
 
 	public void deleteAttribute(String id) {
-		attributeDao.deleteAttribute(id);
+		this.attributeDao.deleteAttribute(id);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#getUserAttributeValues(cn.net.openid.jos.domain.User)
+	 * @see cn.net.openid.dao.DaoFacade#getUserAttributeValues(java.lang.String)
 	 */
-	public Collection<AttributeValue> getUserAttributeValues(User user) {
-		return attributeValueDao.getUserAttributeValues(user);
+	public List<AttributeValue> getUserAttributeValues(String userId) {
+		return this.attributeValueDao.getUserAttributeValues(userId);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#saveAttributeValues(cn.net.openid.jos.domain.User,
-	 *      java.util.Collection)
+	 * @see cn.net.openid.dao.DaoFacade#saveAttributeValues(java.util.Collection)
 	 */
-	public void saveAttributeValues(User user,
-			Collection<AttributeValue> attributeValues) {
+	public void saveAttributeValues(Collection<AttributeValue> attributeValues) {
 		for (AttributeValue attributeValue : attributeValues) {
-			if (user.equals(attributeValue.getUser())) {
-				attributeValueDao.saveAttributeValue(attributeValue);
-			}
+			this.attributeValueDao.saveAttributeValue(attributeValue);
 		}
 	}
 
@@ -475,160 +363,161 @@ public class JosServiceImpl implements JosService {
 	 * @see cn.net.openid.dao.DaoFacade#getJosConfiguration()
 	 */
 	public JosConfiguration getJosConfiguration() {
-		return josConfiguration;
+		return this.josConfiguration;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#isAlwaysApprove(cn.net.openid.jos.domain.User,
+	 * @see cn.net.openid.jos.service.JosService#isAlwaysApprove(java.lang.String,
 	 *      java.lang.String)
 	 */
-	public boolean isAlwaysApprove(User user, String realmUrl) {
-		Site site = siteDao.getSite(user, realmUrl);
+	public boolean isAlwaysApprove(String userId, String realmUrl) {
+		Site site = this.siteDao.getSite(userId, realmUrl);
 		return site == null ? false : site.isAlwaysApprove();
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#updateApproval(cn.net.openid.jos.domain.User,
+	 * @see cn.net.openid.jos.service.JosService#updateApproval(java.lang.String,
 	 *      java.lang.String)
 	 */
-	public void updateApproval(User user, String realmUrl) {
-		Site site = siteDao.getSite(user, realmUrl);
+	public void updateApproval(String userId, String realmUrl) {
+		Site site = this.siteDao.getSite(userId, realmUrl);
 		site.setApprovals(site.getApprovals() + 1);
-		siteDao.updateSite(site);
+		this.siteDao.updateSite(site);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#allow(cn.net.openid.jos.domain.User,
+	 * @see cn.net.openid.jos.service.JosService#allow(java.lang.String,
 	 *      java.lang.String, cn.net.openid.jos.domain.Persona, boolean)
 	 */
-	public void allow(User user, String realmUrl, Persona persona,
+	public void allow(String userId, String realmUrl, Persona persona,
 			boolean forever) {
 		if (log.isDebugEnabled()) {
-			log.debug("user: " + user);
+			log.debug("userId: " + userId);
 			log.debug("realmUrl: " + realmUrl);
 		}
-		Site site = siteDao.getSite(user, realmUrl);
+		Site site = this.siteDao.getSite(userId, realmUrl);
 		if (site == null) {
-			Realm realm = realmDao.getRealmByUrl(realmUrl);
+			Realm realm = this.realmDao.getRealmByUrl(realmUrl);
 			if (realm == null) {
 				realm = new Realm();
 				realm.setUrl(realmUrl);
-				realmDao.insertRealm(realm);
+				this.realmDao.insertRealm(realm);
 			}
 			site = new Site();
-			site.setUser(user);
+			site.setUser(this.userDao.getUser(userId));
 			site.setRealm(realm);
 			site.setLastAttempt(new Date());
 			site.setApprovals(1);
 			site.setAlwaysApprove(forever);
 			site.setPersona(persona);
 
-			siteDao.insertSite(site);
+			this.siteDao.insertSite(site);
 		} else {
 			site.setAlwaysApprove(forever);
 			site.setApprovals(site.getApprovals() + 1);
 			site.setPersona(persona);
-			siteDao.updateSite(site);
+			this.siteDao.updateSite(site);
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#getSites(cn.net.openid.jos.domain.User)
+	 * @see cn.net.openid.jos.service.JosService#getSites(java.lang.String)
 	 */
-	public List<Site> getSites(User user) {
-		return siteDao.getSites(user);
+	public List<Site> getSites(String userId) {
+		return this.siteDao.getSites(userId);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#getSite(cn.net.openid.jos.domain.User,
+	 * @see cn.net.openid.jos.service.JosService#getSite(java.lang.String,
 	 *      java.lang.String)
 	 */
-	public Site getSite(User user, String realmUrl) {
-		return siteDao.getSite(user, realmUrl);
+	public Site getSite(String userId, String realmUrl) {
+		return this.siteDao.getSite(userId, realmUrl);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#updateAlwaysApprove(cn.net.openid.jos.domain.User,
+	 * @see cn.net.openid.jos.service.JosService#updateAlwaysApprove(java.lang.String,
 	 *      java.lang.String, boolean)
 	 */
-	public void updateAlwaysApprove(User user, String realmId,
+	public void updateAlwaysApprove(String userId, String realmId,
 			boolean alwaysApprove) {
-		siteDao.updateAlwaysApprove(user, realmId, alwaysApprove);
+		this.siteDao.updateAlwaysApprove(userId, realmId, alwaysApprove);
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#getPersona(cn.net.openid.jos.domain.User,
+	 * @see cn.net.openid.jos.service.JosService#deletePersona(java.lang.String)
+	 */
+	public void deletePersona(String id) {
+		this.personaDao.deletePersona(id);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see cn.net.openid.jos.service.JosService#getPersona(java.lang,String,
 	 *      java.lang.String)
 	 */
-	public Persona getPersona(User user, String id) {
-		Persona persona = personaDao.getPersona(id);
-		return (persona != null && persona.getUser().equals(user)) ? persona
-				: null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see cn.net.openid.jos.service.JosService#getPersonas(cn.net.openid.jos.domain.User)
-	 */
-	public Collection<Persona> getPersonas(User user) {
-		return personaDao.getPersonas(user);
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see cn.net.openid.jos.service.JosService#insertPersona(cn.net.openid.jos.domain.User,
-	 *      cn.net.openid.jos.domain.Persona)
-	 */
-	public void insertPersona(User user, Persona persona) {
-		if (user.equals(persona.getUser())) {
-			personaDao.insertPersona(persona);
+	public Persona getPersona(String userId, String id) {
+		Persona persona = this.personaDao.getPersona(id);
+		if (persona != null && persona.getUser().getId().equals(userId)) {
+			return persona;
 		} else {
-			throw new NoPermissionException();
+			return null;
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#updatePersona(cn.net.openid.jos.domain.User,
-	 *      cn.net.openid.jos.domain.Persona)
+	 * @see cn.net.openid.jos.service.JosService#getDefaultPersona(java.lang.String)
 	 */
-	public void updatePersona(User user, Persona persona) {
-		if (user.equals(persona.getUser())) {
-			personaDao.updatePersona(persona);
-		} else {
-			throw new NoPermissionException();
+	public Persona getDefaultPersona(String userId) {
+		Collection<Persona> personas = this.personaDao.getPersonas(userId);
+		Persona persona = null;
+		if (!personas.isEmpty()) {
+			persona = personas.iterator().next();
 		}
+		return persona;
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see cn.net.openid.jos.service.JosService#deletePersonas(cn.net.openid.jos.domain.User,
-	 *      java.lang.String[])
+	 * @see cn.net.openid.jos.service.JosService#getPersonas(java.lang.String)
 	 */
-	public void deletePersonas(User user, String[] personaIds) {
-		for (String personaId : personaIds) {
-			Persona persona = getPersona(user, personaId);
-			if (persona != null) {
-				personaDao.deletePersona(persona);
-			}
-		}
+	public Collection<Persona> getPersonas(String userId) {
+		return this.personaDao.getPersonas(userId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see cn.net.openid.jos.service.JosService#insertPersona(cn.net.openid.jos.domain.Persona)
+	 */
+	public void insertPersona(Persona persona) {
+		this.personaDao.insertPersona(persona);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see cn.net.openid.jos.service.JosService#updatePersona(cn.net.openid.jos.domain.Persona)
+	 */
+	public void updatePersona(Persona persona) {
+		this.personaDao.updatePersona(persona);
 	}
 }

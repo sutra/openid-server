@@ -3,6 +3,8 @@
  */
 package cn.net.openid.jos.dao.hibernate;
 
+import java.util.List;
+
 import cn.net.openid.jos.dao.RealmDao;
 import cn.net.openid.jos.domain.Realm;
 
@@ -13,7 +15,14 @@ import cn.net.openid.jos.domain.Realm;
 public class HibernateRealmDao extends BaseHibernateEntityDao<Realm> implements
 		RealmDao {
 	public Realm getRealmByUrl(String url) {
-		return findUnique("from Realm where url = ?", url);
+		List<Realm> realms = this.find("from Realm where url = ?", url);
+		Realm realm;
+		if (!realms.isEmpty()) {
+			realm = realms.get(0);
+		} else {
+			realm = null;
+		}
+		return realm;
 	}
 
 	/*
@@ -22,6 +31,6 @@ public class HibernateRealmDao extends BaseHibernateEntityDao<Realm> implements
 	 * @see cn.net.openid.jos.dao.RealmDao#insertRealm(cn.net.openid.jos.domain.Realm)
 	 */
 	public void insertRealm(Realm realm) {
-		getHibernateTemplate().save(realm);
+		this.getHibernateTemplate().save(realm);
 	}
 }
