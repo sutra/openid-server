@@ -1,0 +1,101 @@
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("login")</title>
+		<style type="text/css">
+			span code {
+				display: block;
+				text-indent: 2em;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+	<div>
+		#parse("header.vm")
+		<fieldset>
+			<legend>#springMessage("login")</legend>
+<div>
+A site identifying itself as 
+<span><code>$!command.authRequest.returnTo</code></span>
+has asked us for confirmation that
+<span><code>$!command.authRequest.identity</code></span>
+is your identity URL.
+</div>
+<div>
+The site also asked for additional information.
+It did not provide a link to the policy on data it collects.
+##You can find the their policy about the data it collected on this page.
+This is the persona we're going to send to <code>$!command.authRequest.realm</code>:
+</div>
+			<form action="approving" method="post">
+				#springBind("command.token")
+				<input type="hidden" name="$!{status.expression}" value="$!{esc.html($!{status.value})}" />
+
+				#springBind("command.personaId")
+				<table class="list">
+					<thead>
+						<tr>
+							<th>#springMessage("persona.title.name")</th>
+							<th>#springMessage("persona.title.nickname")</th>
+							<th>#springMessage("persona.title.email")</th>
+							<th>#springMessage("persona.title.fullname")</th>
+							<th>#springMessage("persona.title.dob")</th>
+							<th>#springMessage("persona.title.gender")</th>
+							<th>#springMessage("persona.title.postcode")</th>
+							<th>#springMessage("persona.title.country")</th>
+							<th>#springMessage("persona.title.language")</th>
+							<th>#springMessage("persona.title.timezone")</th>
+							<th>#springMessage("button.edit")</th>
+						</tr>
+					</thead>
+					<tbody>
+					#foreach($persona in $personas)
+						<tr>
+							<td style="text-align:left;"><input type="radio" id="$!{esc.html($!{persona.id})}" name="personaId" value="$!{esc.html($!{persona.id})}"
+							#if($status && $status.value && $status.value == $persona.id)
+								checked="checked"
+							#end
+							/><label for="$!{esc.html($!{persona.id})}">$!{esc.html($!{persona.name})}</label></td>
+							<td>$!{esc.html($!{persona.nickname})}</td>
+							<td>$!{esc.html($!{persona.email})}</td>
+							<td>$!{esc.html($!{persona.fullname})}</td>
+							<td>$!{esc.html($!{persona.dob})}</td>
+							<td>$!{esc.html($!{persona.gender})}</td>
+							<td>$!{esc.html($!{persona.postcode})}</td>
+							<td>$!{esc.html($!{persona.country})}</td>
+							<td>$!{esc.html($!{persona.language})}</td>
+							<td>$!{esc.html($!{persona.timezone})}</td>
+							<td><a href="persona?id=$!{esc.html($!{persona.id})}&token=$!{esc.html($!{token})}">#springMessage("edit")</a></td>
+						</tr>
+					#end
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="10"><a href="persona?token=$!{esc.html($!{token})}">Add New Persona</a></td>
+						</tr>
+					</tfoot>
+				</table>
+
+				#springShowErrors("" "error")
+
+				#springBind("command.attributes")
+				<table>
+				#foreach($attribute in $status.value)
+					<tr>
+						<td class="label"><label for="attribute_$!{esc.html($!{attribute.name})}">#springMessage($!{esc.html($!{attribute.label})})</label>
+						#if(${attribute.required})
+							<span class="error">*</span>
+						#end
+					</td>
+					<td><input type="text" id="attribute_$!{esc.html($!{attribute.name})}" name="$!{esc.html($!{attribute.name})}" value="$!{esc.html($!{attribute.value})}" /></td></tr>
+				#end
+				</table>
+				<input type="submit" name="allow_forever" value="Allow Forever" class="button" />
+				<input type="submit" name="allow_once" value="Allow Once" class="button" />
+				<input type="submit" name="deny" value="Deny" class="button" />
+			</form>
+		</fieldset>
+		#parse("footer.vm")
+	</div>
+</body>
+</html>

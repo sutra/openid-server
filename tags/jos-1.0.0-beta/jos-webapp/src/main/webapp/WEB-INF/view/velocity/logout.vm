@@ -1,0 +1,12 @@
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("logout")</title>
+	</head>
+	<body>
+	<div>
+		#parse("header.vm")
+		#springMessage("message.logout.success")
+		#parse("footer.vm")
+	</div>
+</body>
+</html>
