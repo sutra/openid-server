@@ -1,0 +1,91 @@
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("register")</title>
+		<script type="text/javascript">
+			function chkFrm() {
+				var objUsername = document.getElementById("username");
+				if (objUsername.value === "") {
+					alert("#springMessageText("error.username.format" "Username is required.")");
+					objUsername.focus();
+					return false;
+				}
+				var objPassword = document.getElementById("password");
+				if (objPassword.value === "") {
+					alert("#springMessageText("error.password.empty" "Password is required.")");
+					objPassword.focus();
+					return false;
+				}
+				var objConfirmingPassword = document.getElementById("confirmingPassword");
+				if (objPassword.value !== objConfirmingPassword.value) {
+					alert("#springMessageText("error.password.notEquals" "Confirming password is not equals to the password.")");
+					objConfirmingPassword.focus();
+					return false;
+				}
+			}
+		</script>
+	</head>
+	<body>
+	<div>
+		#parse("header.vm")
+		<fieldset>
+			<legend>#springMessage("register")</legend>
+			<form action="register" method="post" onsubmit="return chkFrm()">
+				<table>
+					#springBind("command.username")
+					<tr>
+						<td class="label">
+							<label for="username">#springMessage("label.openid")</label>
+						</td>
+						<td>
+							${josConfiguration.identifierPrefix}
+							#springFormInput("command.username" 'class="sexy" size="16"')
+							${josConfiguration.identifierSuffix}
+							#springShowErrors("" "error")
+						</td>
+					</tr>
+				</table>
+				<table>
+					#springBind("command.password")
+					<tr>
+						<td class="label">
+							<label for="password">#springMessage("password.label.plaintext")</label>
+						</td>
+						<td>
+							#springFormPasswordInput("command.password" 'class="common"')
+							#springShowErrors("" "error")
+						</td>
+					</tr>
+					#springBind("command.confirmingPassword")
+					<tr>
+						<td class="label">
+							<label for="confirmingPassword">#springMessage("password.label.confirmingPassword")</label>
+					  </td>
+						<td>
+							#springFormPasswordInput("command.confirmingPassword" 'class="common"')
+							#springShowErrors("" "error")
+						</td>
+					</tr>
+					<tr>
+						<td class="label">&nbsp;</td>
+						<td>
+							<button name="submit" type="submit">#springMessage("button.register")</button>
+						</td>
+					</tr>
+				</table>
+			</form>
+			<script type="text/javascript">
+				<!--
+				var objUsername = document.getElementById("username");
+				if (objUsername.value === "") {
+					objUsername.focus();
+				} else {
+					document.getElementById("password").focus();
+				}
+				//-->
+			</script>
+		</fieldset>
+		#parse("footer.vm")
+	</div>
+</body>
+</html>
