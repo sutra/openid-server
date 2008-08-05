@@ -1,0 +1,47 @@
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("email.title")</title>
+		<script type="text/javascript">
+			function checkAll(checkbox) {
+				$("input[type='checkbox'][name='id']").attr("checked", checkbox.checked ? "checked" : "");
+			}
+		</script>
+	</head>
+	<body>
+	<div>
+		#parse("header.vm")
+		<fieldset><legend>#springMessage("email.title")</legend>
+		#if ($unconfirmedEmails.size() > 0)
+		<p>#springMessage("email.message.unconfirmed.header")</p>
+		<ul>
+			#foreach($email in $unconfirmedEmails)
+			<li>${email.address} (<a href="email-remove?id=${email.id}">#springMessage("remove")</a>)</li>
+			#end
+		</ul>
+		<p>#springMessage("email.message.unconfirmed.description")</p>
+		#end
+
+		#if ($confirmedEmails.size() > 0)
+		<p>#springMessage("email.message.confirmed.header")</p>
+		<ul>
+			#foreach($email in $confirmedEmails)
+			<li>
+				$email.address #if($email.primary)*#end (<a href="email-remove?id=${email.id}">#springMessage("remove")</a>)
+				#if(!$email.primary)(<a href="email-set-primary?id=${email.id}">#springMessage("email.button.makePrimary")</a>)#end
+			</li>
+			#end
+		</ul>
+		<p>#springMessage("email.message.primary.description")</p>
+		#end
+		<p>#springMessage("email.message.addNew.description")</p>
+		<form action="email" method="post">
+			<label for="address">#springMessage("email.label.address")</label>
+			#springFormInput("email.address" "")
+			#springShowErrors("" "error")
+			<input type="submit" class="button" value="#springMessage('email.button.sendInstructions')" />
+		</form>
+		</fieldset>
+		#parse("footer.vm")
+	</div>
+</body>
+</html>
