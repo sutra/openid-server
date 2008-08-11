@@ -1,0 +1,19 @@
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("register")</title>
+	</head>
+	<body>
+	<div>
+		#parse("header.vm")
+		#springBind("command.username")
+		#set($openidUrl="${josConfiguration.identifierPrefix}$!{status.value}${josConfiguration.identifierSuffix}")
+		OpenID：
+		<a href="${openidUrl}">
+			${openidUrl}
+		</a>
+		#springMessage("message.register.success")
+		<a href="login?username=${link.encodeURL($!{status.value})}">#springMessage("button.login")</a>
+		#parse("footer.vm")
+	</div>
+</body>
+</html>
