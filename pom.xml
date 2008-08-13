@@ -1,10 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0       http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>cn.net.openid.jos</groupId>
 	<artifactId>jos</artifactId>
 	<packaging>pom</packaging>
 	<name>Java OpenID Server</name>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1.0-alpha</version>
 	<url>http://openid.net.cn</url>
 	<modules>
 		<module>jos-domain</module>
@@ -58,7 +58,7 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.0</version>
+				<version>4.4</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -227,8 +227,9 @@
 		</plugins>
 	</reporting>
 	<scm>
-		<connection>scm:svn:http://openid-server.googlecode.com/svn/trunk/</connection>
-		<developerConnection>scm:svn:https://openid-server.googlecode.com/svn/trunk</developerConnection>
-		<url>http://code.google.com/p/openid-server/source/browse/</url>
+		<connection>scm:svn:http://openid-server.googlecode.com/svn/branches/virtualdomainsupport</connection>
+		<developerConnection>scm:svn:https://openid-server.googlecode.com/svn/branches/virtualdomainsupport</developerConnection>
+		<tag>HEAD</tag>
+		<url>http://code.google.com/p/openid-server/source/browse/branches/virtualdomainsupport</url>
 	</scm>
 </project>
