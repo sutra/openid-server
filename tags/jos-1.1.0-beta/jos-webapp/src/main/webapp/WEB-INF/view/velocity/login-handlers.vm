@@ -1,0 +1,59 @@
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("login")</title>
+	</head>
+	<body>
+	<div>
+		#parse("header.vm")
+		<fieldset>
+			<legend>#springMessage("login.other")</legend>
+			<form action="index.login" method="post">
+				<table>
+					#springBind("command.username")
+					<tr>
+						<td class="label">
+							<label for="username">OpenID：</label>
+						</td>
+						<td>
+							${openidConfiguration.openidUrlPrefix}
+							<input type="text" id="username" name="$!{status.expression}" class="sexy" size="10" value="$!{esc.html($!{status.value})}" />
+							${openidConfiguration.openidUrlSuffix}
+							<span class="error">$!{status.errorMessage}</span>
+						</td>
+					</tr>
+					#springBind("command.credentialHandler.id")
+					<tr>
+						<td class="label">
+							#springMessage("label.credential.type")
+						</td>
+						<td>
+							<dl>
+								#foreach($credentialHandler in $command.credentialHandlers)
+								<dt>
+									<input type="radio" id="${credentialHandler.id}" name="${status.expression}" value="${credentialHandler.id}" />
+									<label for="${credentialHandler.id}">
+										##${credentialHandler.name}
+										#springMessage("credential.handler.name.${credentialHandler.id}")
+									</label>
+								</dt>
+								<dd>
+									##${credentialHandler.description}
+									#springMessage("credential.handler.description.${credentialHandler.id}")
+								</dd>
+								#end
+							</dl>
+							<span class="error">$!{status.errorMessage}</span>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td><input type="submit" value="#springMessage("login")" class="button" /></td>
+					</tr>
+				</table>
+			</form>
+		</fieldset>
+		#parse("footer.vm")
+	</div>
+</body>
+</html>
