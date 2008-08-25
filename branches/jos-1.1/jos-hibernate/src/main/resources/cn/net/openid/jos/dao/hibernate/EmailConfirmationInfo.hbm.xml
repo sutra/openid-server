@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="cn.net.openid.jos.domain">
+	<class name="EmailConfirmationInfo"
+		table="jos_email_confirmation_info">
+		<id name="id" unsaved-value="null" length="32"
+			column="email_confirmation_info_id">
+			<generator class="foreign">
+				<param name="property">email</param>
+			</generator>
+		</id>
+		<one-to-one name="email" constrained="true" fetch="join"
+			lazy="false" />
+		<property name="confirmationCode" length="40" update="false"
+			column="email_confirmation_info_confirmation_code" />
+		<property name="sent" not-null="true"
+			column="email_confirmation_info_sent" />
+		<property name="sentDate" type="timestamp"
+			column="email_confirmation_info_sent_date" />
+		<property name="confirmed" not-null="true"
+			column="email_confirmation_info_confirmed" />
+		<property name="confirmedDate" type="timestamp"
+			column="email_confirmation_info_confirmed_date" />
+		<property name="creationDate" type="timestamp" not-null="true"
+			column="email_confirmation_info_creation_date" update="false" />
+	</class>
+</hibernate-mapping>
