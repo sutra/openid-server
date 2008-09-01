@@ -3,13 +3,14 @@
  */
 package cn.net.openid.jos.web.controller;
 
+import java.util.Locale;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
-
-import cn.net.openid.jos.web.AbstractJosController;
+import org.springframework.web.servlet.mvc.AbstractController;
 
 /**
  * Human language selection controller.
@@ -17,7 +18,9 @@ import cn.net.openid.jos.web.AbstractJosController;
  * @author Sutra Zhou
  * 
  */
-public class HumanLanguageSelectionController extends AbstractJosController {
+public class HumanLanguageSelectionController extends AbstractController {
+	private static Locale[] locales = Locale.getAvailableLocales();
+
 	private ModelAndView modelAndView;
 
 	private LocaleResolver localeResolver;
@@ -25,14 +28,13 @@ public class HumanLanguageSelectionController extends AbstractJosController {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.web.servlet.mvc.Controller#handleRequest(javax.servlet
-	 * .http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 * @see org.springframework.web.servlet.mvc.AbstractController#handleRequestInternal(javax.servlet.http.HttpServletRequest,
+	 *      javax.servlet.http.HttpServletResponse)
 	 */
-	public ModelAndView handleRequest(HttpServletRequest request,
+	@Override
+	protected ModelAndView handleRequestInternal(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		request.setAttribute("locales", this.getJosService()
-				.getAvailableLanguages());
+		request.setAttribute("locales", locales);
 		request.setAttribute("locale", this.localeResolver
 				.resolveLocale(request));
 		return modelAndView;
