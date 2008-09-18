@@ -1,0 +1,9 @@
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("logout")</title>
+	</head>
+	<body>
+		#springMessage("message.logout.success")
+	</body>
+</html>

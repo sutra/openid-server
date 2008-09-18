@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>Java OpenID Server</display-name>
+	<description>Java OpenID Server.</description>
+
+	<!-- Spring. -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/applicationContext.xml,
+			/WEB-INF/dataAccessContext-hibernate.xml,
+			/WEB-INF/config/applicationContext-transactionManager.xml,
+			/WEB-INF/config/applicationContext-dataSource.xml,
+			/WEB-INF/config/applicationContext-mail.xml
+		</param-value>
+	</context-param>
+
+	<context-param>
+		<description>
+			设置默认的HTML转码行为。参看 spring_ref 2.0 的 14.4.5.2 章节。
+		</description>
+		<param-name>defaultHtmlEscape</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+
+	<!-- Spring. -->
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+
+
+	<!-- ================ FILTER DEFINITIONS ================ -->
+
+	<!-- Character Encoding. -->
+	<filter>
+		<display-name>Set Character Encoding Filter</display-name>
+		<filter-name>Set Character Encoding Filter</filter-name>
+		<filter-class>
+			org.springframework.web.filter.CharacterEncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<display-name>Request Logging Filter</display-name>
+		<filter-name>Request Logging Filter</filter-name>
+		<filter-class>org.springframework.web.filter.CommonsRequestLoggingFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+		<init-param>
+			<param-name>logLevel</param-name>
+			<param-value>WARN</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<filter-name>openSessionInViewFilter</filter-name>
+		<filter-class>
+			org.springframework.orm.hibernate3.support.OpenSessionInViewFilter
+		</filter-class>
+	</filter>
+
+	<!-- Domain Filter -->
+	<filter>
+		<display-name>Domain Filter</display-name>
+		<filter-name>Domain Filter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>domainFilter</param-value>
+		</init-param>
+	</filter>
+
+	<!-- Java OpenID Server Member URL. -->
+	<filter>
+		<display-name>Member Filter</display-name>
+		<filter-name>Member Filter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>memberFilter</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<display-name>User Agent Locales Filter</display-name>
+		<filter-name>User Agent Locales Filter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>userAgentLocalesFilter</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<display-name>Approving Request Filter</display-name>
+		<filter-name>Approving Request Filter</filter-name>
+		<filter-class>
+			cn.net.openid.jos.web.filter.ApprovingRequestFilter
+		</filter-class>
+	</filter>
+
+	<filter>
+		<filter-name>sitemesh</filter-name>
+		<filter-class>
+			com.opensymphony.module.sitemesh.filter.PageFilter
+		</filter-class>
+	</filter>
+
+
+	<!-- ================ SERVLET DEFINITIONS ================ -->
+
+	<servlet>
+		<servlet-name>jos</servlet-name>
+		<servlet-class>
+			org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>
+		<load-on-startup>20</load-on-startup>
+	</servlet>
+
+	<!-- Java OpenID Server Member page. -->
+	<servlet>
+		<display-name>Open ID Member</display-name>
+		<servlet-name>member</servlet-name>
+		<servlet-class>
+			cn.net.openid.jos.web.MemberServlet
+		</servlet-class>
+		<load-on-startup>30</load-on-startup>
+	</servlet>
+
+	<!--
+	<servlet>
+		<servlet-name>sitemesh-velocity</servlet-name>
+		<servlet-class>
+			com.opensymphony.module.sitemesh.velocity.VelocityDecoratorServlet
+		</servlet-class>
+		<load-on-startup>10</load-on-startup>
+	</servlet>
+	-->
+
+
+	<!-- ================ FILTER MAPPING ================ -->
+
+	<filter-mapping>
+		<filter-name>Set Character Encoding Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Request Logging Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>openSessionInViewFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Domain Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Member Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>User Agent Locales Filter</filter-name>
+		<servlet-name>jos</servlet-name>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Approving Request Filter</filter-name>
+		<servlet-name>jos</servlet-name>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>sitemesh</filter-name>
+		<servlet-name>jos</servlet-name>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+
+
+	<!-- ================ SERVLET MAPPING ================ -->
+
+	<servlet-mapping>
+		<!--
+		<servlet-name>sitemesh-velocity</servlet-name>
+		-->
+		<servlet-name>jos</servlet-name>
+		<url-pattern>*.vm</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>jos</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>member</servlet-name>
+		<url-pattern>/member/*</url-pattern>
+	</servlet-mapping>
+
+
+	<!-- ================ SECURITY SETTINGS ================ -->
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>*.do and member.jsp</web-resource-name>
+			<description>Disable access to *.do and member.jsp directly.</description>
+			<url-pattern>*.do</url-pattern>
+			<url-pattern>/member.jsp</url-pattern>
+		</web-resource-collection>
+		<auth-constraint />
+	</security-constraint>
+
+
+	<!-- ================ ERROR PAGE DEFINTIONS ================ -->
+
+	<error-page>
+		<exception-type>
+			org.springframework.context.ApplicationContextException
+		</exception-type>
+		<location>/WEB-INF/view/jsp/brokenContext.jsp</location>
+	</error-page>
+
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/WEB-INF/view/jsp/errors.jsp</location>
+	</error-page>
+	<error-page>
+		<exception-type>cn.net.openid.jos.service.exception.UnresolvedDomainException</exception-type>
+		<location>/WEB-INF/view/jsp/unresolved-domain.jsp</location>
+	</error-page>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/WEB-INF/view/jsp/404.jsp</location>
+	</error-page>
+</web-app>

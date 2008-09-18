@@ -1,0 +1,9 @@
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>删除附加属性</title>
+	</head>
+	<body>
+		<a href="attributes">返回属性</a>
+	</body>
+</html>

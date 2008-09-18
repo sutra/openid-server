@@ -1,0 +1,97 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+		  "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<bean id="hibernateProperties"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<props>
+				<prop key="hibernate.dialect">
+					${hibernate.dialect}
+				</prop>
+				<prop key="hibernate.show_sql">
+					${hibernate.show_sql}
+				</prop>
+				<prop key="hibernate.hbm2ddl.auto">
+					${hibernate.hbm2ddl.auto}
+				</prop>
+				<prop key="jdbc.fetch_size">50</prop>
+				<prop key="jdbc.batch_size">25</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.provider_class">
+					org.hibernate.cache.EhCacheProvider
+				</prop>
+				<prop key="hibernate.query.substitutions">
+					true 1,false 0
+				</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties" ref="hibernateProperties" />
+		<property name="mappingLocations">
+			<list>
+				<!--
+					Avoid to use wildcard as it will cause
+					org.hibernate.DuplicateMappingException
+					when duplicate jos-hibernate-*.jar found in the classpath
+				<value>
+					classpath*:/cn/net/openid/jos/dao/hibernate/*.xml
+				</value>
+				-->
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Attribute.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/AttributeValue.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Domain.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Email.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/EmailConfirmationInfo.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Password.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Persona.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Realm.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Site.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/User.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/UsernameConfiguration.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- ================ DAO DEFINITIONS ================ -->
+
+	<bean id="baseDao"
+		class="cn.net.openid.jos.dao.hibernate.BaseHibernateEntityDao"
+		abstract="true">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="domainDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateDomainDao"
+		parent="baseDao" />
+	<bean id="userDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateUserDao"
+		parent="baseDao" />
+	<bean id="passwordDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernatePasswordDao"
+		parent="baseDao" />
+	<bean id="emailDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateEmailDao"
+		parent="baseDao" />
+	<bean id="emailConfirmationInfoDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateEmailConfirmationInfoDao"
+		parent="baseDao" />
+	<bean id="personaDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernatePersonaDao"
+		parent="baseDao" />
+	<bean id="attributeDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateAttributeDao"
+		parent="baseDao" />
+	<bean id="attributeValueDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateAttributeValueDao"
+		parent="baseDao" />
+	<bean id="realmDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateRealmDao"
+		parent="baseDao" />
+	<bean id="siteDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateSiteDao"
+		parent="baseDao" />
+</beans>

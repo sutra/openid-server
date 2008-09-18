@@ -1,0 +1,30 @@
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>#springMessage("openid")</title>
+	</head>
+	<body>
+		#if(!${userSession.loggedIn})
+		<form action="#josUrl("/home")" method="post">
+			<div>
+				<label for="username">#springMessage("label.openid")</label>
+				<span class="identifier">
+				${domain.identifierPrefix}
+				<input type="text" id="username" name="username" accesskey="U" />
+				${domain.identifierSuffix}
+				</span>
+				<button type="submit" name="login" accesskey="L">#springMessage("button.login")</button>
+				##<input type="submit" name="index.login" value="#springMessage("login.other")" accesskey="A" />
+				<button type="submit" name="register" accesskey="R">#springMessage("button.register")</button>
+			</div>
+		</form>
+		<script type="text/javascript">
+			<!--
+			document.getElementById("username").focus();
+			//-->
+		</script>
+		#else
+			#parse("detail.vm")
+		#end
+	</body>
+</html>

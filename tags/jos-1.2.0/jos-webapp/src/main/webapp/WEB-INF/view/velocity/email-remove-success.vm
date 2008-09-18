@@ -1,0 +1,10 @@
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("email.title")</title>
+	</head>
+	<body>
+		<div>#springMessage("email.message.removed")</div>
+		<a href="#josUrl("/email")">#springMessage("email.button.backToEmail")</a>
+	</body>
+</html>

@@ -1,0 +1,17 @@
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>附加属性</title>
+	</head>
+	<body>
+		<form action="#josUrl("/edit-attribute")" method="post">
+			#springBind("attribute.id")
+			<input type="hidden" name="${status.expression}" value="$!{status.value}" />
+			#springBind("attribute.alias")
+			<ul>
+				<li>Alias:<input type="text" name="${status.expression}" value="$!{status.value}" /></li>
+			</ul>
+			<input type="submit" value="Save" />
+		</form>
+	</body>
+</html>

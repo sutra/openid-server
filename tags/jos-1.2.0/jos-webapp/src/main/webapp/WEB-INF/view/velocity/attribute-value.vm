@@ -1,0 +1,21 @@
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>附加属性</title>
+	</head>
+	<body>
+		<form action="#josUrl("/attribute-value")" method="post">
+		<table>
+		#foreach($attributeValue in $command)
+			<tr>
+				<td>$attributeValue.attribute.alias :</td>
+				<td><input type="text" id="$attributeValue.attribute.id"
+					name="$attributeValue.attribute.id"
+					value="$!attributeValue.value" /></td>
+			</tr>
+		#end
+		</table>
+		<button type="submit">Save</button>
+		</form>
+	</body>
+</html>

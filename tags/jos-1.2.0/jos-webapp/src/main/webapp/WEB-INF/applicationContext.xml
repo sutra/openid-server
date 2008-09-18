@@ -1,0 +1,169 @@
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+		  "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>WEB-INF/config/jdbc.properties</value>
+				<value>WEB-INF/config/jos.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="baseTransactionProxy"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
+		abstract="true">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="set*">PROPAGATION_REQUIRED</prop>
+				<prop key="insert*">PROPAGATION_REQUIRED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED</prop>
+				<prop key="save*">PROPAGATION_REQUIRED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED</prop>
+				<prop key="generate*">PROPAGATION_REQUIRED</prop>
+				<prop key="login">PROPAGATION_REQUIRED</prop>
+				<prop key="allow">PROPAGATION_REQUIRED</prop>
+				<prop key="confirmEmail">PROPAGATION_REQUIRED</prop>
+				<prop key="*">PROPAGATION_REQUIRED,readOnly</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="josService" parent="baseTransactionProxy">
+		<property name="target">
+			<bean class="cn.net.openid.jos.service.JosServiceImpl">
+				<property name="systemReservedWordPattern"
+					value="${system.reserved.word.pattern}" />
+				<property name="domainDao" ref="domainDao" />
+				<property name="userDao" ref="userDao" />
+				<property name="passwordDao" ref="passwordDao" />
+				<property name="emailDao" ref="emailDao" />
+				<property name="emailConfirmationInfoDao"
+					ref="emailConfirmationInfoDao" />
+				<property name="personaDao" ref="personaDao" />
+				<property name="attributeDao" ref="attributeDao" />
+				<property name="attributeValueDao"
+					ref="attributeValueDao" />
+				<property name="realmDao" ref="realmDao" />
+				<property name="siteDao" ref="siteDao" />
+				<property name="passwordGenerator" ref="passwordGenerator" />
+				<property name="availableLocales">
+					<set>
+						<value>en_US</value>
+						<value>ja</value>
+						<value>pt</value>
+						<value>zh_CN</value>
+					</set>
+				</property>
+				<property name="configuratorPassword"
+					value="${domain.configurator.password}" />
+			</bean>
+		</property>
+		<property name="postInterceptors">
+			<list>
+				<ref bean="emailAdvisor" />
+				<ref bean="sendSingleUsePasswordAdvisor" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="passwordGenerator"
+		class="cn.net.openid.jos.service.RandomPasswordGenerator" />
+
+
+	<!-- ================ ADVISOR DEFINITIONS ================ -->
+
+	<bean id="emailAdvisor"
+		class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice">
+			<ref local="insertEmailAfterReturningAdvice" />
+		</property>
+		<property name="pattern">
+			<value>.*insertEmail</value>
+		</property>
+	</bean>
+
+	<bean id="sendSingleUsePasswordAdvisor"
+		class="org.springframework.aop.support.RegexpMethodPointcutAdvisor">
+		<property name="advice">
+			<ref local="generateSingleUsePasswordAfterReturningAdvice" />
+		</property>
+		<property name="pattern">
+			<value>.*generateSingleUsePassword</value>
+		</property>
+	</bean>
+
+
+	<!-- ================ ADVICE DEFINITIONS ================ -->
+
+	<bean id="insertEmailAfterReturningAdvice"
+		class="cn.net.openid.jos.service.InsertEmailAfterReturningAdvice">
+		<property name="emailConfirmationInfoSendTaskExecutor"
+			ref="emailConfirmationInfoSendTaskExecutor" />
+	</bean>
+
+	<bean id="generateSingleUsePasswordAfterReturningAdvice"
+		class="cn.net.openid.jos.service.GenerateSingleUsePasswordAfterReturningAdvice">
+		<property name="passwordSendTaskExecutor"
+			ref="passwordSendTaskExecutor" />
+	</bean>
+
+	<!-- ================ TASK EXECUTOR DEFINITIONS ================ -->
+
+	<bean id="taskExecutor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="5" />
+		<property name="maxPoolSize" value="10" />
+		<property name="queueCapacity" value="25" />
+	</bean>
+
+	<bean id="emailConfirmationInfoSendTaskExecutor"
+		class="cn.net.openid.jos.service.EmailConfirmationInfoSendTaskExecutor">
+		<constructor-arg ref="taskExecutor" />
+		<property name="mailSender" ref="mailSender" />
+	</bean>
+
+	<bean id="passwordSendTaskExecutor"
+		class="cn.net.openid.jos.service.PasswordSendTaskExecutor">
+		<constructor-arg ref="taskExecutor" />
+		<property name="mailSender" ref="mailSender" />
+	</bean>
+
+
+	<!-- ================ VALIDATOR DEFINITIONS ================ -->
+
+	<bean id="personaValidator"
+		class="cn.net.openid.jos.web.validation.PersonaValidator">
+		<property name="emailAddressPattern" value="${email.address.pattern}" />
+	</bean>
+	<bean id="emailValidator"
+		class="cn.net.openid.jos.web.validation.EmailValidator">
+		<property name="emailAddressPattern" value="${email.address.pattern}" />
+	</bean>
+	<bean id="registerFormValidator"
+		class="cn.net.openid.jos.web.validation.RegisterFormValidator">
+		<property name="josService" ref="josService" />
+	</bean>
+
+
+	<!-- ================ FILTER DEFINITIONS ================ -->
+	<!-- Setup filters so native filters will use josService -->
+
+	<bean id="oncePerRequestServiceFilter"
+		class="cn.net.openid.jos.web.filter.OncePerRequestServiceFilter"
+		abstract="true">
+		<property name="service" ref="josService" />
+	</bean>
+	<bean id="domainFilter"
+		class="cn.net.openid.jos.web.filter.DomainFilter"
+		parent="oncePerRequestServiceFilter">
+		<property name="skipPattern" value="${domain.filter.skip.pattern}" />
+	</bean>
+	<bean id="memberFilter"
+		class="cn.net.openid.jos.web.filter.MemberFilter"
+		parent="oncePerRequestServiceFilter" />
+	<bean id="userAgentLocalesFilter"
+		class="cn.net.openid.jos.web.filter.UserAgentLocalesFilter"
+		parent="oncePerRequestServiceFilter" />
+</beans>

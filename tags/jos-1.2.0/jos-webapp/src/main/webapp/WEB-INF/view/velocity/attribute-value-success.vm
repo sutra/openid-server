@@ -1,0 +1,10 @@
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("profile")</title>
+	</head>
+	<body>
+		附加属性修改成功
+		<a href="attribute-value">返回附加属性</a>
+</body>
+</html>
