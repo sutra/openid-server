@@ -43,7 +43,7 @@ Quick Install Guide
   "domain.configurator.password". 
 
 Appendix
-  How to test on localhost with type "Subdomain"?
+1. How to test on localhost with type "Subdomain"?
   Add the following block to your hosts file(/etc/hosts on Unix-like operating
   systems, more about hosts file see http://en.wikipedia.org/wiki/Hosts_file):
 
@@ -55,3 +55,8 @@ Appendix
   on "http://www.example1.com/".
   Attention, under this mode as using 127.0.0.1 as your IP, you can't test on
   an external OpenID-enalbed site(RP) which IP is not "127.0.0.1".
+
+2. Upgrade from 1.1.0 to 1.2.0
+ After installation execute the following SQL in your database:
+ update jos_password set password_maximum_service_times = -1,
+ password_used_times = 0, password_last_used_date = password_creation_date;
