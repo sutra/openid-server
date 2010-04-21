@@ -1,0 +1,127 @@
+#*
+ * Copyright (c) 2006-2009, Redv.com
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Redv.com nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *#
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>#springMessage("openid") - #springMessage("login")</title>
+		<style type="text/css">
+			span code {
+				display: block;
+				text-indent: 2em;
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<fieldset>
+			<legend>#springMessageText("approving.title" "OpenID Verification")</legend>
+			<div>
+				#josMessageTextArgsEscaped("approving" ["<span><code>$!command.authRequest.returnTo</code></span>", "<span><code>$!command.authRequest.identity</code></span>"] "A site identifying itself as {0} has asked us for confirmation that {1} is your identity URL. " false)
+			</div>
+			#if($personas)
+			<div>
+				#springMessageText("approving.additionalInformation.1" "The site also asked for additional information. ")
+				#springMessageText("approving.additionalInformation.2" "It did not provide a link to the policy on data it collects. ")
+				##springMessageText("approving.additionalInformation.3" "You can find the their policy about the data it collected on this page. ")
+				#josMessageTextArgsEscaped("approving.additionalInformation.4" ["<code>$!command.authRequest.realm</code>"] "This is the persona we're going to send to {0}: " false) 
+			</div>
+			#end
+			<form action="#josUrl("/approving")" method="post">
+				#springBind("command.token")
+				<input type="hidden" name="$!{status.expression}" value="$!{esc.html($!{status.value})}" />
+
+				#if($personas)
+				#springBind("command.personaId")
+				<table class="list">
+					<thead>
+						<tr>
+							<th>#springMessage("persona.title.name")</th>
+							<th>#springMessage("persona.title.nickname")</th>
+							<th>#springMessage("persona.title.email")</th>
+							<th>#springMessage("persona.title.fullname")</th>
+							<th>#springMessage("persona.title.dob")</th>
+							<th>#springMessage("persona.title.gender")</th>
+							<th>#springMessage("persona.title.postcode")</th>
+							<th>#springMessage("persona.title.country")</th>
+							<th>#springMessage("persona.title.language")</th>
+							<th>#springMessage("persona.title.timezone")</th>
+							<th>#springMessage("button.edit")</th>
+						</tr>
+					</thead>
+					<tbody>
+					#foreach($persona in $personas)
+						<tr>
+							<td style="text-align:left;"><input type="radio" id="$!{esc.html($!{persona.id})}" name="personaId" value="$!{esc.html($!{persona.id})}"
+							#if($status && $status.value && $status.value == $persona.id)
+								checked="checked"
+							#end
+							/><label for="$!{esc.html($!{persona.id})}">$!{esc.html($!{persona.name})}</label></td>
+							<td>$!{esc.html($!{persona.nickname})}</td>
+							<td>$!{esc.html($!{persona.email})}</td>
+							<td>$!{esc.html($!{persona.fullname})}</td>
+							<td>$!{esc.html($!{persona.dob})}</td>
+							<td>$!{esc.html($!{persona.gender})}</td>
+							<td>$!{esc.html($!{persona.postcode})}</td>
+							<td>$!{esc.html($!{persona.country})}</td>
+							<td>$!{esc.html($!{persona.language})}</td>
+							<td>$!{esc.html($!{persona.timezone})}</td>
+							<td><a href="persona?id=$!{esc.html($!{persona.id})}&token=$!{esc.html($!{token})}">#springMessage("edit")</a></td>
+						</tr>
+					#end
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="11"><a href="persona?token=$!{esc.html($!{token})}">#springMessage("persona.button.addNewPersona")</a></td>
+						</tr>
+					</tfoot>
+				</table>
+				#end
+
+				#springShowErrors("" "error")
+
+				#springBind("command.attributes")
+				<table>
+				#foreach($attribute in $status.value)
+					<tr>
+						<td class="label"><label for="attribute_$!{esc.html($!{attribute.name})}">#springMessage($!{esc.html($!{attribute.label})})</label>
+						#if(${attribute.required})
+							<span class="error">*</span>
+						#end
+					</td>
+					<td><input type="text" id="attribute_$!{esc.html($!{attribute.name})}" name="$!{esc.html($!{attribute.name})}" value="$!{esc.html($!{attribute.value})}" /></td></tr>
+				#end
+				</table>
+				<button type="submit" name="allow_forever">#springMessageText("button.allowForever" "Allow Forever")</button>
+				<button type="submit" name="allow_once">#springMessageText("button.allowOnce" "Allow Once")</button>
+				<button type="submit" name="deny">#springMessageText("button.deny" "Deny")</button>
+			</form>
+		</fieldset>
+	</body>
+</html>
