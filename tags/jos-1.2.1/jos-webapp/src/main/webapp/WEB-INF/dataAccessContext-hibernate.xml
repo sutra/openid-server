@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2006-2009, Redv.com
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+        * Redistributions of source code must retain the above copyright
+          notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright
+          notice, this list of conditions and the following disclaimer in the
+          documentation and/or other materials provided with the distribution.
+        * Neither the name of the Redv.com nor the
+          names of its contributors may be used to endorse or promote products
+          derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+    ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN"
+		  "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<beans>
+	<bean id="hibernateProperties"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+		<property name="properties">
+			<map>
+				<entry key="hibernate.dialect">
+					<bean class="org.springframework.jndi.JndiObjectFactoryBean">
+						<property name="jndiName">
+							<value>java:comp/env/hibernate.dialect</value>
+						</property>
+					</bean>
+				</entry> 
+				<entry key="hibernate.hbm2ddl.auto">
+					<bean class="org.springframework.jndi.JndiObjectFactoryBean">
+						<property name="jndiName">
+							<value>java:comp/env/hibernate.hbm2ddl.auto</value>
+						</property>
+					</bean>
+				</entry>
+				<entry key="hibernate.show_sql">
+					<bean class="org.springframework.jndi.JndiObjectFactoryBean">
+						<property name="jndiName">
+							<value>java:comp/env/hibernate.show_sql</value>
+						</property>
+					</bean>
+				</entry>
+				<entry key="jdbc.fetch_size">
+					<bean class="org.springframework.jndi.JndiObjectFactoryBean">
+						<property name="jndiName">
+							<value>java:comp/env/jdbc.fetch_size</value>
+						</property>
+					</bean>
+				</entry>
+				<entry key="jdbc.batch_size">
+					<bean class="org.springframework.jndi.JndiObjectFactoryBean">
+						<property name="jndiName">
+							<value>java:comp/env/jdbc.batch_size</value>
+						</property>
+					</bean>
+				</entry>
+				<entry key="hibernate.cache.use_query_cache"><value>true</value></entry>
+				<entry key="hibernate.cache.provider_class">
+					<value>org.hibernate.cache.EhCacheProvider</value>
+				</entry>
+				<entry key="hibernate.query.substitutions">
+					<value>true 1,false 0</value>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="hibernateProperties" ref="hibernateProperties" />
+		<property name="mappingLocations">
+			<list>
+				<!--
+					Avoid to use wildcard as it will cause
+					org.hibernate.DuplicateMappingException
+					when duplicate jos-hibernate-*.jar found in the classpath
+				<value>
+					classpath*:/cn/net/openid/jos/dao/hibernate/*.xml
+				</value>
+				-->
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Attribute.hbm.xml</value>
+				<!--
+				Non use from 2008-10-13, if it is non use 2 year later, delete me.
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/AttributeValue.hbm.xml</value>
+				-->
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Domain.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Email.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/EmailConfirmationInfo.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Password.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Persona.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Realm.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/Site.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/User.hbm.xml</value>
+				<value>classpath:/cn/net/openid/jos/dao/hibernate/UsernameConfiguration.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- ================ DAO DEFINITIONS ================ -->
+
+	<bean id="baseDao"
+		class="cn.net.openid.jos.dao.hibernate.BaseHibernateEntityDao"
+		abstract="true">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="domainDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateDomainDao"
+		parent="baseDao" />
+	<bean id="userDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateUserDao"
+		parent="baseDao" />
+	<bean id="passwordDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernatePasswordDao"
+		parent="baseDao" />
+	<bean id="emailDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateEmailDao"
+		parent="baseDao" />
+	<bean id="emailConfirmationInfoDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateEmailConfirmationInfoDao"
+		parent="baseDao" />
+	<bean id="personaDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernatePersonaDao"
+		parent="baseDao" />
+	<bean id="attributeDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateAttributeDao"
+		parent="baseDao" />
+	<bean id="attributeValueDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateAttributeValueDao"
+		parent="baseDao" />
+	<bean id="realmDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateRealmDao"
+		parent="baseDao" />
+	<bean id="siteDao"
+		class="cn.net.openid.jos.dao.hibernate.HibernateSiteDao"
+		parent="baseDao" />
+</beans>
