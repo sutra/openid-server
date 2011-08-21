@@ -1,0 +1,78 @@
+#*
+ * Copyright (c) 2006-2009, Redv.com
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Redv.com nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *#
+#set($springXhtmlCompliant = true)
+<div id="header">
+	<div id="logo">#*<img src="#josUrl("/resources/images/openid-logo.png")" alt="OpenID" />*#</div>
+	<div id="navbar">
+		<ul>
+			#if(!${userSession.loggedIn})
+			<li><a href="#josUrl('/home')" title="#springMessage("home.tip")">#springMessage("home")</a></li>
+			<li><a href="#josUrl('/login')" title="#springMessage("login")">#springMessage("login")</a></li>
+			<li><a href="#josUrl('/register')" title="#springMessage("register.tip")">#springMessage("register")</a></li>
+			#else
+			<li><a href="#josUrl('/home')" title="#springMessage("home.tip")">#springMessage("home")</a></li>
+			<li><a href="#josUrl('/email')" title="#springMessage("email.title.tip")">#springMessage("email.title")</a></li>
+			<li><a href="#josUrl('/passwords')" title="#springMessage("password.title.password")">#springMessage("password.title.passwords")</a></li>
+			<li><a href="#josUrl('/personas')" title="#springMessage("persona.title.persona")">#springMessage("persona.title.personas")</a></li>
+			##<li><a href="#josUrl('/attribute-value')" title="Attribute">附加属性</a></li>
+			<li><a href="#josUrl('/sites')" title="#springMessage("site.title.tip")">#springMessage("site.title.sites")</a></li>
+			<li><a href="#josUrl('/logout')" title="#springMessage("logout.tip")">#springMessage("logout")</a></li>
+			#end
+			<li><a href="#springMessage("about.link")" title="#springMessage("about.tip")">#springMessage("about")</a></li>
+		</ul>
+	</div>
+	<div id="hl">
+		<ul>#foreach($l in $userAgentLocales)<li><a href="#josUrl("?hl=$l#if($!request.getParameter('self'))&amp;self=$!request.getParameter('self')#end")">$l.getDisplayName($l)</a></li>#end<li class="last-child"><a href="#josUrl("/hl#if($!request.getParameter('self'))?self=$!request.getParameter('self')#end")" title="#springMessageText('button.moreLanguages' 'More languages')">»</a></li></ul>
+	</div>
+</div>
+<div id="welcome">
+	 #springMessage("welcome")
+	 #if(${userSession.loggedIn})
+	 <a href="$!{userSession.user.identifier}">$!{userSession.user.identifier}</a>
+	 #end
+</div>
+<div id="description">
+	#josMessageEscaped("description" false)
+</div>
+#if($userSession && $userSession.approvingRequests.size() > 0)
+<div id="approving-tip">
+	#if($userSession.approvingRequests.size() == 1)
+		#springMessageText("approving.request" "Your approving authentiation request: ")
+		#foreach($approvingRequest in $userSession.approvingRequests)<a href="approving?token=$approvingRequest.token">$approvingRequest.authRequest.returnTo</a>#end#springMessageText("punctuation.fullStop" ".")
+	#else
+	#springMessageText("approving.requests" "Your approving authentication requests: ")
+	<ul>
+		#foreach($approvingRequest in $userSession.approvingRequests)
+		<li#if($token && $approvingRequest.token == $token) class="current"#end><a href="approving?token=$approvingRequest.token">$approvingRequest.authRequest.returnTo</a></li>
+		#end
+	</ul>
+	#end
+</div>
+#end

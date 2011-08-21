@@ -1,0 +1,111 @@
+#*
+ * Copyright (c) 2006-2009, Redv.com
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Redv.com nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *#
+#**
+ * josMessage
+ *
+ * Macro to translate a message code into a message.
+ *#
+#macro( josMessage $code)$springMacroRequestContext.getMessage($code)#end
+#macro( josMessageEscaped $code $htmlEscape )$springMacroRequestContext.getMessage($code, null, $htmlEscape)#end
+
+#macro( josMessageArgs $code $args )$springMacroRequestContext.getMessage($code, $args)#end
+#macro( josMessageArgsEscaped $code $args $htmlEscape )$springMacroRequestContext.getMessage($code, $args.toArray(), $htmlEscape)#end
+
+#macro( josMessageTextArgs $code $args $text )$springMacroRequestContext.getMessage($code, $args.toArray(), $text)#end
+#macro( josMessageTextArgsEscaped $code $args $text $htmlEscape )$springMacroRequestContext.getMessage($code, $args.toArray(), $text, $htmlEscape)#end
+
+#**
+ * josUrl
+ *
+ * Takes a relative URL and makes it absolute from the server root by
+ * adding the context root for the web application.
+ *#
+#macro( josUrl $relativeUrl )$response.encodeURL("#springUrl(${relativeUrl})")#end
+
+#**
+ * josFormSingleSelect
+ *
+ * Show a selectbox (dropdown) input element allowing a single value to be chosen
+ * from a list of options.
+ *
+ * The null check for $status.value leverages Velocity's 'quiet' notation rather
+ * than the more common #if($status.value) since this method evaluates to the
+ * boolean 'false' if the content of $status.value is the String "false" - not
+ * what we want.
+ *
+ * @param path the name of the field to bind to
+ * @param options a map (value=label) of all the available options
+ * @param attributes any additional attributes for the element (such as class
+ *    or CSS styles or size
+*#
+#macro( josFormSingleSelect $path $opts $optgroups $attributes )
+	#springBind($path)
+	#set($selected = false)
+	<select name="${status.expression}" ${attributes}>
+		<option value=""#if(!$selected && "$!status.value" == "")#set($selected = true) selected="selected"#end></option>
+		##options
+		#foreach($option in $opts.entrySet())
+		<option value="${option.key}"#if(!$selected && "$!status.value" == "$option.key")#set($selected = true) selected="selected"#end>$option.value</option>
+		#end
+		##optgroups
+		#foreach($options in $optgroups.entrySet())
+		<optgroup label="${options.key}">
+			#foreach($option in $options.value.entrySet())
+			<option value="${option.key}"#if(!$selected && "$!status.value" == "$option.key")#set($selected = true) selected="selected"#end>$option.value</option>
+			#end
+		</optgroup>
+		#end
+	</select>
+#end
+
+#**
+ * josFormRadioButtons
+ *
+ * Show radio buttons.
+ *
+ * @param path the name of the field to bind to
+ * @param options a map (value=label) of all the available options
+ * @param separator the html tag or other character list that should be used to
+ *    separate each option.  Typically '&nbsp;' or '<br>'
+ * @param attributes any additional attributes for the element (such as class
+ *    or CSS styles or size
+*#
+#macro( josFormRadioButtons $path $options $separator $attributes )
+	#springBind($path)
+	#foreach($option in $options.keySet())
+		<input type="radio" name="${status.expression}" id="${status.expression}_$velocityCount" value="${option}"
+		#if("$!status.value" == "$option")
+			checked="checked"
+		#end
+		${attributes}
+		#springCloseTag()
+		<label for="${status.expression}_$velocityCount">${options.get($option)}</label> ${separator}
+	#end
+#end

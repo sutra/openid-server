@@ -1,0 +1,35 @@
+Quick Install Guide
+
+1. Add JDBC driver JAR, java mail JAR to CLASSPATH.
+For Tomcat, you can copy(or link) them to $CATALINA_BASE/lib/.
+
+By default, HSQLDB JDBC driver is required, you can download it from
+http://hsqldb.org/, except you're going to use PostgreSQL, MySQL, etc.
+
+You can download Java mail JAR from http://java.sun.com/products/javamail/.
+
+2. Deploy the WAR into your webapp container (such as Tomcat, Jetty).
+There are several ways to deploy into Tomcat, such as coping the WAR
+into the $CATALINA_BASE/webapp directory, using Tomcat 6 "Manager" web
+application to deploy and undeploy. More about this please see
+http://tomcat.apache.org/tomcat-6.0-doc/appdev/deployment.html#Deployment%20With%20Tomcat%206.
+
+3. Configuration
+After deployed into Tomcat, the file /META-INF/context.xml in the WAR
+will be copied to $CATALINA_BASE/conf/[enginename]/[hostname]/ and renamed
+to match the application's context path(for example, if your context path is
+"/jos", then the file is "jos.xml", and if your context path is "/", in
+another words the name of WAR is ROOT.war, the file will be "ROOT.xml").
+See http://tomcat.apache.org/tomcat-6.0-doc/config/context.html#Introduction
+
+Then you should modify the file
+in $CATALINA_BASE/conf/[enginename]/[hostname]/,
+especially the database and mail configurations, and the password for
+domain configurator(the name of the environment variable is
+"domain.configurator.password").
+
+4. Add domain(s)
+Open "http://localhost:your-port/your-webapp" or
+"http://your-domain:your-port/your-webapp" by your browser, you'll see
+"Unresolved domain", navigate the link "configure this domain", then
+password is required, the password is configured in the previous step. 

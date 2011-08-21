@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2006-2009, Redv.com
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+        * Redistributions of source code must retain the above copyright
+          notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright
+          notice, this list of conditions and the following disclaimer in the
+          documentation and/or other materials provided with the distribution.
+        * Neither the name of the Redv.com nor the
+          names of its contributors may be used to endorse or promote products
+          derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+    ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee 
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>Java OpenID Server</display-name>
+	<description>Java OpenID Server.</description>
+
+	<!-- Spring. -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			/WEB-INF/applicationContext.xml,
+			/WEB-INF/dataAccessContext-hibernate.xml,
+			/WEB-INF/config/applicationContext-transactionManager.xml,
+			/WEB-INF/config/applicationContext-dataSource.xml,
+			/WEB-INF/config/applicationContext-mail.xml
+		</param-value>
+	</context-param>
+
+	<context-param>
+		<description>
+			设置默认的HTML转码行为。参看 spring_ref 2.0 的 14.4.5.2 章节。
+		</description>
+		<param-name>defaultHtmlEscape</param-name>
+		<param-value>true</param-value>
+	</context-param>
+
+
+	<!-- Spring. -->
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+
+
+	<!-- ================ FILTER DEFINITIONS ================ -->
+
+	<!-- Character Encoding. -->
+	<filter>
+		<display-name>Set Character Encoding Filter</display-name>
+		<filter-name>Set Character Encoding Filter</filter-name>
+		<filter-class>
+			org.springframework.web.filter.CharacterEncodingFilter
+		</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<display-name>Request Logging Filter</display-name>
+		<filter-name>Request Logging Filter</filter-name>
+		<filter-class>org.springframework.web.filter.CommonsRequestLoggingFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+		<init-param>
+			<param-name>logLevel</param-name>
+			<param-value>WARN</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<filter-name>openSessionInViewFilter</filter-name>
+		<filter-class>
+			org.springframework.orm.hibernate3.support.OpenSessionInViewFilter
+		</filter-class>
+	</filter>
+
+	<!-- Domain Filter -->
+	<filter>
+		<display-name>Domain Filter</display-name>
+		<filter-name>Domain Filter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>domainFilter</param-value>
+		</init-param>
+	</filter>
+
+	<!-- Java OpenID Server Member URL. -->
+	<filter>
+		<display-name>Member Filter</display-name>
+		<filter-name>Member Filter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>memberFilter</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<display-name>User Agent Locales Filter</display-name>
+		<filter-name>User Agent Locales Filter</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>userAgentLocalesFilter</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<display-name>Approving Request Filter</display-name>
+		<filter-name>Approving Request Filter</filter-name>
+		<filter-class>
+			cn.net.openid.jos.web.filter.ApprovingRequestFilter
+		</filter-class>
+	</filter>
+
+	<filter>
+		<filter-name>sitemesh</filter-name>
+		<filter-class>
+			com.opensymphony.module.sitemesh.filter.PageFilter
+		</filter-class>
+	</filter>
+
+
+	<!-- ================ SERVLET DEFINITIONS ================ -->
+
+	<servlet>
+		<servlet-name>jos</servlet-name>
+		<servlet-class>
+			org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>
+		<load-on-startup>20</load-on-startup>
+	</servlet>
+
+	<!-- Java OpenID Server Member page. -->
+	<servlet>
+		<display-name>Open ID Member</display-name>
+		<servlet-name>member</servlet-name>
+		<servlet-class>
+			cn.net.openid.jos.web.MemberServlet
+		</servlet-class>
+		<load-on-startup>30</load-on-startup>
+	</servlet>
+
+	<!--
+	<servlet>
+		<servlet-name>sitemesh-velocity</servlet-name>
+		<servlet-class>
+			com.opensymphony.module.sitemesh.velocity.VelocityDecoratorServlet
+		</servlet-class>
+		<load-on-startup>10</load-on-startup>
+	</servlet>
+	-->
+
+
+	<!-- ================ FILTER MAPPING ================ -->
+
+	<filter-mapping>
+		<filter-name>Set Character Encoding Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Request Logging Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>openSessionInViewFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Domain Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Member Filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>UrlRewriteFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>User Agent Locales Filter</filter-name>
+		<servlet-name>jos</servlet-name>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Approving Request Filter</filter-name>
+		<servlet-name>jos</servlet-name>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>sitemesh</filter-name>
+		<servlet-name>jos</servlet-name>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>sitemesh</filter-name>
+		<url-pattern>/index.jsp</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
+
+
+	<!-- ================ SERVLET MAPPING ================ -->
+
+	<servlet-mapping>
+		<!--
+		<servlet-name>sitemesh-velocity</servlet-name>
+		-->
+		<servlet-name>jos</servlet-name>
+		<url-pattern>*.vm</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>jos</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>member</servlet-name>
+		<url-pattern>/member/*</url-pattern>
+	</servlet-mapping>
+
+
+	<!-- ================ SECURITY SETTINGS ================ -->
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>*.do and member.jsp</web-resource-name>
+			<description>Disable access to *.do and member.jsp directly.</description>
+			<url-pattern>*.do</url-pattern>
+			<url-pattern>/member.jsp</url-pattern>
+		</web-resource-collection>
+		<auth-constraint />
+	</security-constraint>
+
+
+	<!-- ================ ERROR PAGE DEFINTIONS ================ -->
+
+	<error-page>
+		<exception-type>
+			org.springframework.context.ApplicationContextException
+		</exception-type>
+		<location>/WEB-INF/view/jsp/brokenContext.jsp</location>
+	</error-page>
+
+	<error-page>
+		<exception-type>java.lang.Exception</exception-type>
+		<location>/WEB-INF/view/jsp/errors.jsp</location>
+	</error-page>
+	<error-page>
+		<exception-type>cn.net.openid.jos.service.exception.UnresolvedDomainException</exception-type>
+		<location>/WEB-INF/view/jsp/unresolved-domain.jsp</location>
+	</error-page>
+
+	<error-page>
+		<error-code>404</error-code>
+		<location>/WEB-INF/view/jsp/404.jsp</location>
+	</error-page>
+
+
+	<!-- ================ RESOURCE REFERENCE DEFINTIONS ================ -->
+
+	<resource-ref>
+		<res-ref-name>jdbc/jos</res-ref-name>
+		<res-type>javax.sql.DataSource</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+	<resource-ref>
+		<res-ref-name>mail/Session</res-ref-name>
+		<res-type>javax.mail.Session</res-type>
+		<res-auth>Container</res-auth>
+	</resource-ref>
+
+
+	<!-- ================ HIBERNATE SETTINGS ================ -->
+
+	<resource-env-ref>
+		<resource-env-ref-name>hibernate.dialect</resource-env-ref-name>
+		<resource-env-ref-type>java.lang.String</resource-env-ref-type>
+	</resource-env-ref>
+
+	<env-entry>
+		<env-entry-name>hibernate.hbm2ddl.auto</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value>validate</env-entry-value>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>hibernate.show_sql</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value>false</env-entry-value>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>jdbc.fetch_size</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value>50</env-entry-value>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>jdbc.batch_size</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value>25</env-entry-value>
+	</env-entry>
+
+
+	<env-entry>
+		<description>
+			The password for domain configurator. Keep value "BLANK" then no
+			body can login.
+		</description>
+		<env-entry-name>domain.configurator.password</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value>BLANK</env-entry-value>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>email.address.pattern</env-entry-name>
+		<env-entry-type>java.lang.String</env-entry-type>
+		<env-entry-value><![CDATA[\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*]]></env-entry-value>
+	</env-entry>
+</web-app>

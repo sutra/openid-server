@@ -1,0 +1,104 @@
+#*
+ * Copyright (c) 2006-2009, Redv.com
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Redv.com nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *#
+#set($springXhtmlCompliant = true)
+<html>
+	<head>
+		<title>
+			#springMessage("openid") - #springMessage("persona.title.personas")
+		</title>
+		<script type="text/javascript">
+		<!--
+		function getOffset() {
+			return new Date().getTimezoneOffset() * 1000 * 60 * -1;
+		}
+		//-->
+		</script>
+	</head>
+	<body>
+		<fieldset>
+			<legend>#springMessage("persona.title.personas")</legend>
+			<form method="post">
+			<table class="list">
+				<thead>
+					<tr>
+						<th>#springMessage("persona.title.delete")</th>
+						<th>#springMessage("persona.title.name")</th>
+						<th>#springMessage("persona.title.nickname")</th>
+						<th>#springMessage("persona.title.email")</th>
+						<th>#springMessage("persona.title.fullname")</th>
+						<th>#springMessage("persona.title.dob")</th>
+						<th>#springMessage("persona.title.gender")</th>
+						<th>#springMessage("persona.title.postcode")</th>
+						<th>#springMessage("persona.title.country")</th>
+						<th>#springMessage("persona.title.language")</th>
+						<th>#springMessage("persona.title.timezone")</th>
+					</tr>
+				</thead>
+				<tbody>
+				#foreach($persona in $personas)
+					<tr>
+						<td>
+							<input type="checkbox" name="deletePersonaId" value="$!{esc.html($!{persona.id})}" />
+						</td>
+						<td>
+							<a href="#josUrl("/persona?id=$!{esc.html($!{persona.id})}")"
+								onclick="this.href += '&offset=' + getOffset();this.onclick=function(){}">
+								$!{esc.html($!{persona.name})}
+							</a>
+						</td>
+						<td>$!{esc.html($!{persona.nickname})}</td>
+						<td>$!{esc.html($!{persona.email})}</td>
+						<td>$!{esc.html($!{persona.fullname})}</td>
+						<td>$!{esc.html($!{persona.dob})}</td>
+						<td>$!{esc.html($!{persona.gender})}</td>
+						<td>$!{esc.html($!{persona.postcode})}</td>
+						<td>$!{esc.html($!{persona.country})}</td>
+						<td>$!{esc.html($!{persona.language})}</td>
+						<td>$!{esc.html($!{persona.timezone})}</td>
+					</tr>
+				#end
+				</tbody>
+				<tfoot>
+					<tr>
+						<td colspan="11">
+							<button type="submit">#springMessage("button.remove")</button>
+							<a href="#josUrl("/persona")"
+								onclick="this.href += '?offset=' + getOffset();this.onclick=function(){}">#springMessage("persona.button.addNewPersona")</a>
+						</td>
+					</tr>
+				</tfoot>
+			</table>
+			#if($error)
+				<div class="error">#springMessage("persona.error.inUse")</div>
+			#end
+			</form>
+		</fieldset>
+	</body>
+</html>

@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!--
+
+    Copyright (c) 2006-2009, Redv.com
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+        * Redistributions of source code must retain the above copyright
+          notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright
+          notice, this list of conditions and the following disclaimer in the
+          documentation and/or other materials provided with the distribution.
+        * Neither the name of the Redv.com nor the
+          names of its contributors may be used to endorse or promote products
+          derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+    FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+    COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+    INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+    BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+    LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+    ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+    POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="cn.net.openid.jos.domain">
+	<class name="Persona" table="jos_persona">
+		<id name="id" unsaved-value="null" length="32"
+			column="persona_id">
+			<generator class="uuid" />
+		</id>
+		<many-to-one name="user" column="persona_user_id" fetch="join"
+			lazy="false" />
+		<property name="name" length="255" not-null="true"
+			column="persona_name" />
+		<property name="nickname" length="255"
+			column="persona_nickname" />
+		<property name="email" length="255" column="persona_email" />
+		<property name="fullname" length="255"
+			column="persona_fullname" />
+		<property name="dob" length="10" column="persona_dob" />
+		<property name="gender" length="1" column="persona_gender" />
+		<property name="postcode" length="32" column="persona_postcode" />
+		<property name="country" length="2" column="persona_country" />
+		<property name="language" length="2" column="persona_language" />
+		<property name="timezone" length="32" column="persona_timezone" />
+		<set name="attributes" inverse="true" cascade="all-delete-orphan"
+			fetch="join" lazy="false">
+			<key column="attribute_persona_id" />
+			<one-to-many class="Attribute" />
+		</set>
+		<property name="creationDate" type="timestamp" not-null="true"
+			column="persona_creation_date" />
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,129 @@
+#*
+ * Copyright (c) 2006-2009, Redv.com
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Redv.com nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *#
+#set($springXhtmlCompliant = true)
+<html>
+<head>
+<title>
+	#springMessageText("domain.title.configurator" "Domain configurator")
+</title>
+<link rel="stylesheet" type="text/css" media="screen"
+	href="#josUrl("/resources/styles/domain-configurator.css")" />
+<script type="text/javascript"
+	src="#josUrl("/resources/scripts/domain-configurator.js")">
+</script>
+</head>
+<body>
+<form method="post" action="#josUrl("/domain-configurator")">
+<div>
+#springFormHiddenInput("command.id" "")
+
+## Base settings
+<fieldset>
+	<legend>
+		#springMessageText("domain.title.baseSettings" "Base settings")
+	</legend>
+	<div id="identifierPatternDiv">
+		<label>#springMessageText("domain.label.identifierPattern" "OpenID Identifier pattern:")</label>
+		<div id="openid_identifier_pattern"></div>
+	</div>
+	<noscript><div>#springMessageText("domain.identifier.pattern.preview.noscript.error" "Javascript is required.")</div></noscript>
+	<dl>
+		<dt>#springMessageText("domain.label.type" "Type:")</dt>
+		<dd>#josFormRadioButtons("command.type" $types "" "onchange='changeDomainType(parseInt(this.value, 10));showIdentifierPattern()'")</dd>
+
+		<dt>#springMessageText("domain.label.name" "Name:")</dt>
+		<dd>#springFormInput("command.name" "onkeyup='showIdentifierPattern()'")</dd>
+
+		<dt>#springMessageText("domain.label.serverHost" "Server host:")</dt>
+		<dd>#springFormInput("command.serverHost" "onkeyup='showIdentifierPattern()'")</dd>
+
+		<dt>#springMessageText("domain.label.memberPath" "Member path:")</dt>
+		<dd>#springFormInput("command.memberPath" "onkeyup='showIdentifierPattern()'")</dd>
+	</dl>
+</fieldset>
+
+## Username configuration
+<fieldset>
+	<legend>
+		#springMessageText("domain.title.usernameConfiguration" "Username configuration")
+	</legend>
+	<dl>
+		<dt>#springMessageText("domain.label.usernameConfiguration.regex" "Username pattern:")</dt>
+		<dd>#springFormInput("command.usernameConfiguration.regex" "")</dd>
+		<dt>#springMessageText("domain.label.usernameConfiguration.reservedRegex" "Reserved username pattern:")</dt>
+		<dd>#springFormInput("command.usernameConfiguration.reservedRegex" "")</dd>
+		<dt>#springMessageText("domain.label.usernameConfiguration.unallowableRegex" "Unallowable username pattern:")</dt>
+		<dd>#springFormInput("command.usernameConfiguration.unallowableRegex" "")</dd>
+	</dl>
+</fieldset>
+
+## Extended configuration
+<fieldset id="extendedConfiguration">
+	<legend>
+		#springMessageText("domain.title.configuration" "Domain extended configuration(Optional)")
+	</legend>
+	<ul>
+		#foreach($attribute in $command.configuration.entrySet())
+		<li>
+			<input type="text" name="key" value="$attribute.key" />:
+			<input type="text" name="value" value="$attribute.value" />
+		</li>
+		#end
+		#set($keys = ["inceptionYear", "organization.url", "organization.name", "privacy.url", "defaultLocale", "https.endpoint.enabled", "https.identifier.enabled"])
+		#set($keySet = $command.configuration.keySet())
+		#foreach($key in $keys)
+			#if(!$keySet.contains($key))
+			<li>
+				<input type="text" name="key" value="$key" />:
+				<input type="text" name="value" />
+			</li>
+			#end
+		#end
+	</ul>
+</fieldset>
+
+<button type="submit">
+#if(!$command.id)
+	#springMessageText("button.addDomain" "Add domain")
+#else
+	#springMessageText("button.modifyDomain" "Modify domain")
+#end
+</button>
+</div>
+</form>
+
+<script type="text/javascript">
+<!--
+changeDomainType(getType());
+showIdentifierPattern();
+//-->
+</script>
+</body>
+</html>
