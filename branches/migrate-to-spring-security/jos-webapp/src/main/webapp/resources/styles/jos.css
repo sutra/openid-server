@@ -1,0 +1,289 @@
+/******************************************************************************
+ * Global.
+ ******************************************************************************/
+img {
+	border: 0;
+}
+
+td {
+	vertical-align: top;
+}
+
+a {
+	text-decoration: none;
+	color: #ff5600;
+}
+
+a:hover {
+	text-decoration: underline;
+	color: red;
+}
+
+body {
+	margin: 0;
+}
+
+p {
+	margin-top: 0;
+}
+
+pre {
+	color: #000;
+	background: #eee;
+	border: 1px solid #777;
+	padding: 7px;
+}
+
+fieldset {
+	border: 1px solid #ddd;
+	padding: 5px 9px;
+}
+
+legend {
+	padding: 0 2px;
+	text-transform: uppercase;
+}
+
+ul {
+	padding-left: 40px;
+}
+
+/******************************************************************************
+ * Defined class.
+ ******************************************************************************/
+input[type=text],input[type=password] {
+	background-color: #fff;
+	background-position: 0 50%;
+	color: #000;
+	border: 1px #A5ACB2 solid;
+}
+
+input[type=text]:enabled:hover,input[type=password]:enabled:hover {
+	border-color: red;
+}
+
+input[type=text]:focus,input[type=password]:focus {
+	border-color: rgb(255, 98, 0);
+}
+
+button {
+	background: rgb(255, 98, 0) none repeat scroll 0%;
+	/*
+	-moz-background-clip: -moz-initial;
+	-moz-background-origin: -moz-initial;
+	-moz-background-inline-policy: -moz-initial;
+	*/
+	color: rgb(255, 255, 255);
+	border: 1px outset;
+}
+
+span.identifier {
+	background: url(../images/login-bg.gif) no-repeat;
+	background-position: 0 50%;
+	padding-left: 18px;
+}
+
+span.identifier input[type=text] {
+	border-width: 0px 0px 1px 0px;
+	width: 6em;
+}
+
+input.sexy {
+	background: url(../images/login-bg.gif) no-repeat;
+	background-color: #fff;
+	background-position: 0 50%;
+	color: #000;
+	padding-left: 18px;
+	border: 1px #A5ACB2 solid;
+}
+
+.warning {
+	color: red;
+	background: #fff;
+	font-weight: bold;
+}
+
+.error {
+	color: red;
+	background: #fff;
+}
+
+.credentialHandlerList {
+	list-style: none;
+}
+
+td.label {
+	width: 180px;
+	text-align: right;
+	vertical-align: top;
+}
+
+table.list {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+table.list th,table.list td {
+	border-bottom: 1px dashed #ddd;
+	padding-top: 6px;
+	padding-bottom: 0px;
+	text-align: center;
+}
+
+table.list tfoot tr td {
+	text-align: right;
+}
+
+/* Useless password */
+tr.useless {
+	border: 1px solid #fcc;
+	background-color: #fee;
+}
+
+/******************************************************************************
+ * Id.
+ ******************************************************************************/
+#main {
+	border: 10px solid #cdcdcd;
+	margin: 0;
+	padding: 15px 50px 20px 50px;
+	background: white;
+	color: #000;
+}
+
+#header {
+}
+
+#logo {
+}
+
+#footer {
+	text-align: center;
+	border-top: 1px solid #AAA;
+	margin-top: 50px;
+	padding: 10px;
+}
+
+#poweredBy {
+	text-align: right;
+	margin-top: 4px;
+}
+
+#navbar {
+	text-align: center;
+	line-height: 20px;
+	padding-left: 4px;
+	padding-right: 4px;
+	border-bottom: 1px solid #AAA;
+}
+
+#navbar li {
+	display: inline;
+}
+
+#navbar a {
+	font-size: 16px;
+	font-weight: bold;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+#navbar a:hover {
+	text-decoration: none;
+	color: #ff5600;
+	background-color: yellow;
+	padding-top: 5px;
+	border-top: 3px #006699 solid;
+}
+
+/* Human language */
+#hl {
+	text-align: right;
+	color: #666;
+	font-size: 0.9em;
+	margin: 0;
+	right: 0;
+	padding: 0;
+}
+
+.hl ul,#hl ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.hl ul,#hl li {
+	padding: 0 0.5em 0 0.2em;
+	display: inline;
+	border-right: 1px solid #B6B6B6;
+}
+
+#hl li.last-child {
+	padding: 0 0em 0 0.2em;
+	border-right: 0;
+}
+
+.hl a,#hl a {
+	color: #900;
+}
+
+#description {
+	margin: 10px 0px 10px 0px;
+}
+
+#approving-tip {
+	color: #000;
+	border: 1px dashed #ddd;
+	padding: 7px;
+}
+
+#approving-tip ul {
+	list-style: circle;
+}
+
+#approving-tip li:hover {
+	list-style: disc;
+}
+
+#approving-tip li.current {
+	list-style: disc;
+}
+
+/* Persona attribute */
+div.attribute {
+	margin: 10px 0;
+}
+
+div.attribute td.label {
+	width: 250px;
+}
+
+div.attribute td.handler {
+	padding-left: 0px;
+}
+
+div.attribute td.value img.value {
+	width: 8px;
+	height: 8px;
+}
+
+div.attribute td.handler img.attribute {
+	width: 12px;
+	height: 12px;
+}
+
+div.attribute a {
+	background-color: #fff;
+}
+
+div.attribute ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+div.attribute input.alias,div.attribute input.type {
+	width: 80%;
+	border-width: 0 0 1px 0;
+	text-align: right;
+}
