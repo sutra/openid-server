@@ -16,6 +16,7 @@
 		<link rel="stylesheet" type="text/css" media="screen"
 			href="$base/resources/styles/jos.css" />
 		#if($domain)
+		$!domain.configuration.get("head")
 		<link rel="stylesheet" type="text/css" media="screen"
 			href="$base/resources/custom/${domain.name}.css" />
 		#end

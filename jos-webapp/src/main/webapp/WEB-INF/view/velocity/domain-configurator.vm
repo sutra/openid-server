@@ -92,11 +92,11 @@
 	<ul>
 		#foreach($attribute in $command.configuration.entrySet())
 		<li>
-			<input type="text" name="key" value="$attribute.key" />:
-			<input type="text" name="value" value="$attribute.value" />
+			<input type="text" name="key" value="$!{esc.html($!{attribute.key})}" />:
+			<input type="text" name="value" value="$!{esc.html($!{attribute.value})}" />
 		</li>
 		#end
-		#set($keys = ["inceptionYear", "organization.url", "organization.name", "privacy.url", "defaultLocale", "https.endpoint.enabled", "https.identifier.enabled"])
+		#set($keys = ["head", "inceptionYear", "organization.url", "organization.name", "privacy.url", "defaultLocale", "https.endpoint.enabled", "https.identifier.enabled"])
 		#set($keySet = $command.configuration.keySet())
 		#foreach($key in $keys)
 			#if(!$keySet.contains($key))
